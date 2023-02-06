@@ -21,15 +21,41 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 class ProductsAPI extends Controller
 {
 
-    public function list()
+    public function list(Request $request)
     {
-        $data = Products::all();
+        $prj_id = $request->prj_id;
+
+        if($prj_id){
+            $data = Products::leftJoin('project_products', 'project_products.pr_id', '=', 'products.pr_id')
+                ->where('project_products.prj_id', $prj_id)
+                ->get();
+        } else {
+            $data = Products::all();
+        }
         return datatables($data)
             ->addColumn('action', function ($db) {
                 $action = '
                     <a class="dropdown-item d-flex align-items-center text-secondary" style="gap:5px" href="javascript:detail(\''.$db->pr_id.'\')">
                         <i style="font-size:18px"  class="bx bx-show " ></i>
                         <span>Details</span>
+                </a>
+                ';
+                return '
+                    <div class="btn-group dropend" style="">
+                        <button type="button" class="btn btn-action rounded-pill btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu" style="">
+                            '.$action.'
+                        </div>
+                    </div>
+                ';
+            })
+            ->addColumn('action_del', function ($db) {
+                $action = '
+                    <a class="dropdown-item d-flex align-items-center text-danger" style="gap:5px" href="javascript:delProduct(\''.$db->pr_prj_id.'\')">
+                        <i style="font-size:18px"  class="bx bx-show " ></i>
+                        <span>Delete</span>
                 </a>
                 ';
                 return '
@@ -76,7 +102,7 @@ class ProductsAPI extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model'])->toJson();
+            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model', 'action_del'])->toJson();
     }
 
     public function import(Request $request){
@@ -197,7 +223,7 @@ class ProductsAPI extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Berhasil menyimpan data',
+                'message' => 'Success to save data',
             ]);
         } catch (\Throwable $th) {
             throw $th;
@@ -205,7 +231,7 @@ class ProductsAPI extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Gagal menyimpan data',
+            'message' => 'Failed to save data',
         ]);
     }
 
@@ -334,5 +360,12 @@ class ProductsAPI extends Controller
         $drawing->setPath($path); // put your path and image here
         $drawing->setCoordinates($coord);
         $drawing->setWorksheet($sheet->getActiveSheet());
+    }
+
+    public function search(Request $request){
+        $data = Products::where('pr_code', 'ILIKE', '%'.$request->value.'%')->get();
+        if($data && count($data) > 0)
+            return json_encode(array('status' => '201', 'data' => $data));
+        else return json_encode(array('status' => '400'));
     }
 }
