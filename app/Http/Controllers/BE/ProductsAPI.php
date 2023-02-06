@@ -11,6 +11,13 @@ use Illuminate\Http\File;
 
 use App\Models\Products;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 class ProductsAPI extends Controller
 {
 
@@ -132,19 +139,19 @@ class ProductsAPI extends Controller
         $drawing = $sheet->getDrawingCollection();
         foreach($drawing as $draw){
             if($draw->getCoordinates() == 'A14'){
-                $path = 'Product/'.$model->pr_code.'-'.$model->pr_id.'.main.png';
+                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.main.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_main_photo = $path;
             }
             else if($draw->getCoordinates() == 'D15' || $draw->getCoordinates() == 'D16' || $draw->getCoordinates() == 'D17'){
-                $path = 'Product/'.$model->pr_code.'-'.$model->pr_id.'.dimension.png';
+                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.dimension.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_dimension_photo = $path;
             }
             else if($draw->getCoordinates() == 'C31' || $draw->getCoordinates() == 'C30'){
-                $path = 'Product/'.$model->pr_code.'-'.$model->pr_id.'.photometric.png';
+                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.photometric.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_photometric_photo = $path;
@@ -181,7 +188,7 @@ class ProductsAPI extends Controller
             foreach($request->file() as $key => $file){
                 // upload to storage
                 $extension = $file->getClientOriginalExtension();
-                $path = 'Product/'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
+                $path = 'Product\\'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
                 Storage::disk('local')->put($path, file_get_contents($file));
                 $dbs[$key] = $path;
             }
@@ -206,7 +213,21 @@ class ProductsAPI extends Controller
     public function delF($id)
     {
         try {
-            Products::find($id)->delete();
+            $data = Products::find($id);
+            $main_photo = $data->pr_main_photo;
+            $dimension_photo = $data->pr_dimension_photo;
+            $photometric_photo = $data->pr_photometric_photo;
+            $accessories_photo = $data->pr_accessories_photo;
+
+            // delete files
+            Storage::disk('local')->delete($main_photo);
+            Storage::disk('local')->delete($dimension_photo);
+            Storage::disk('local')->delete($photometric_photo);
+            Storage::disk('local')->delete($accessories_photo);
+
+            // delete data
+            $data->delete();
+
 
             return response()->json([
                 'status' => 'success',
@@ -226,4 +247,92 @@ class ProductsAPI extends Controller
     // Custom Function Place HERE !
     //-----------------------------------------------------------------------
 
+    public function exportPDF($id){
+        $db = Products::find($id);
+
+        // $photometric_photo = url('getimage/'.base64_encode($db->pr_photometric_photo));
+        $data['db'] = $db;
+        $data['main_photo'] = storage_path('app\\'.$db->pr_main_photo);
+        $data['dimension_photo'] = storage_path('app\\'.$db->pr_dimension_photo);
+        $data['photometric_photo'] = storage_path('app\\'.$db->pr_photometric_photo);
+
+        $pdf = Pdf::loadView('products.export-pdf', $data);
+        return $pdf->stream('invoice.pdf');
+    }
+
+    public function exportExcel($id){
+        ini_set('memory_limit', '-1');
+
+        $db = Products::find($id);
+
+        $editFile = 'export-excell.xlsx';
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($editFile);
+        $sheet = $spreadsheet->getSheetByName('Sheet');
+
+        $keys = [
+            'pr_application' => 'C10',
+            'pr_code' => 'H10',
+            'pr_luminaire_type' => 'H13',
+            'pr_light_source' => 'H15',
+            'pr_lumen_output' => 'H17',
+            'pr_lamp_type' => 'J15',
+            'pr_optical' => 'H19',
+            'pr_color_temperature' => 'H21',
+            'pr_color_rendering' => 'H23',
+            'pr_finishing' => 'H25',
+            'pr_content' => 'A27',
+            'pr_lumen_maintenance' => 'H29',
+            'pr_ip_rating' => 'H31',
+            'pr_manufacturer' => 'H33',
+            'pr_model' => 'H35',
+            'pr_driver' => 'H38',
+            'pr_supplier' => 'H41',
+            'pr_unit_price' => 'H45',
+        ];
+
+        $sheet->setCellValue('C10', $db->pr_application);
+        $sheet->setCellValue('H10', $db->pr_code);
+        $sheet->setCellValue('H13', $db->pr_luminaire_type);
+        $sheet->setCellValue('H15', $db->pr_light_source);
+        $sheet->setCellValue('H17', $db->pr_lumen_output);
+        $sheet->setCellValue('J15', $db->pr_lamp_type);
+        $sheet->setCellValue('H19', $db->pr_optical);
+        $sheet->setCellValue('H21', $db->pr_color_temperature);
+        $sheet->setCellValue('H23', $db->pr_color_rendering);
+        $sheet->setCellValue('H25', $db->pr_finishing);
+        $sheet->setCellValue('A27', $db->pr_content);
+        $sheet->setCellValue('H29', $db->pr_lumen_maintenance);
+        $sheet->setCellValue('H31', $db->pr_ip_rating);
+        $sheet->setCellValue('H33', $db->pr_manufacturer);
+        $sheet->setCellValue('H35', $db->pr_model);
+        $sheet->setCellValue('H38', $db->pr_driver);
+        $sheet->setCellValue('H41', $db->pr_supplier);
+        $sheet->setCellValue('H45', $db->pr_unit_price);
+
+        $main = storage_path('app\\'.$db->pr_main_photo);
+        $dimension = storage_path('app\\'.$db->pr_dimension_photo);
+        $photometric = storage_path('app\\'.$db->pr_photometric_photo);
+
+        $this->draw_image('main', $main, $spreadsheet, 'A14');
+        $this->draw_image('dimension', $dimension, $spreadsheet, 'D16');
+        $this->draw_image('photometric', $photometric, $spreadsheet, 'C31');
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. urlencode($db->pr_code.'-'.$db->pr_id.'.xlsx').'"');
+        ob_end_clean();
+        ob_start();
+        $writer->save('php://output');
+    }
+
+    private function draw_image($name, $path, $sheet, $coord){
+        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing->setName($name);
+        $drawing->setDescription($name);
+        $drawing->setOffsetX(20);
+
+        $drawing->setPath($path); // put your path and image here
+        $drawing->setCoordinates($coord);
+        $drawing->setWorksheet($sheet->getActiveSheet());
+    }
 }

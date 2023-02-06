@@ -31,6 +31,12 @@
                         <button class="btn btn-danger" onclick="delF()">
                             <i class="bx bx-save"></i> Delete Product
                         </button>
+                        <button class="btn btn-secondary" onclick="export_pdf()">
+                            <i class="bx bx-save"></i> Export PDF
+                        </button>
+                        <button class="btn btn-success" onclick="export_excel()">
+                            <i class="bx bx-save"></i> Export Excel
+                        </button>
                         @endif
                     </div>
 
@@ -274,6 +280,14 @@
                     }
                 });
             }
+        }
+
+        function export_pdf(){
+            window.open('{{ url("api/products/$id/export/pdf") }}', '_blank');
+        }
+
+        function export_excel(){
+            window.open('{{ url("api/products/$id/export/excel") }}', '_blank');
         }
 
         function delF() {

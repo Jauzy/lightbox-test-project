@@ -10,3 +10,5 @@ Route::GET('products/{id}', 'BE\ProductsAPI@getById');
 Route::DELETE('products/{id}', 'BE\ProductsAPI@delF');
 Route::POST('products', 'BE\ProductsAPI@saveF');
 Route::POST('products/import', 'BE\ProductsAPI@import');
+Route::GET('/products/{id}/export/pdf', 'BE\ProductsAPI@exportPDF');
+Route::GET('/products/{id}/export/excel', 'BE\ProductsAPI@exportExcel');
