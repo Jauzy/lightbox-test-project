@@ -27,9 +27,11 @@
                         <button class="btn btn-primary" onclick="save()">
                             <i class="bx bx-save"></i> Save Form
                         </button>
+                        @if($id)
                         <button class="btn btn-danger" onclick="delF()">
                             <i class="bx bx-save"></i> Delete Product
                         </button>
+                        @endif
                     </div>
 
                     <form id="frm" class="mt-2">
@@ -174,7 +176,9 @@
             theme: 'snow'
         });
 
-        edit('{{ $id }}')
+        @if($id)
+            edit('{{ $id }}')
+        @endif
 
         function edit(id) {
             $.ajax({

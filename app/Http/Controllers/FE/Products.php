@@ -12,7 +12,11 @@ class Products extends Controller
         return view('products.list');
     }
 
-public function form($code){
+    public function form($code){
         return view('products.form', ['id' => $code]);
+    }
+
+    public function new(){
+        return view('products.form', ['id' => null]);
     }
 }

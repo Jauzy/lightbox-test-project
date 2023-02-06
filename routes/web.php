@@ -18,6 +18,7 @@ Route::group(['middleware' => ['web']], function () {
     // Route::GET('login', 'FE\LoginController@login');
 
     Route::get('/products', 'FE\Products@index');
+    Route::get('/products/new', 'FE\Products@new');
     Route::get('/products/{code}/form', 'FE\Products@form');
 
     // Route::get('/content/articles', 'FE\ArticlesController@index');

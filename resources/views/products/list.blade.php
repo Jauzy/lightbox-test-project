@@ -202,11 +202,20 @@
             // $('.dataTables_filter input[type=search]').attr('placeholder', 'Search').attr('class', 'form-control form-control-sm');
             // $('.dataTables_filter select[name=table_length]').attr('class', 'form-select form-select-sm');
             $('.custom-button').append(`
-                <button class="btn btn-success font-weight-semibold text-nowrap" onclick="impor_template()">
-                    <i class="bx bx-spreadsheet"></i> <span class="d-none d-lg-inline-block">Import Products</span>
-                </button>
+                <div class="d-flex flex-wrap" style="gap:10px">
+                    <button class="btn btn-success font-weight-semibold text-nowrap" onclick="impor_template()">
+                        <i class="bx bx-spreadsheet"></i> <span class="d-none d-lg-inline-block">Import Products</span>
+                    </button>
+                    <button class="btn btn-primary font-weight-semibold text-nowrap" onclick="addnew()">
+                        <i class="bx bx-plus"></i> <span class="d-none d-lg-inline-block">Add New Product</span>
+                    </button>
+                </div>
             `)
         })
+
+        function addnew(){
+            window.location.href = "{{ url('products/new') }}";
+        }
 
         function edit(code){
             window.location.href = "{{ url('products/') }}/" + code + '/form';
