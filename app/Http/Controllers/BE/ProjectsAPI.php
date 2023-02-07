@@ -70,7 +70,7 @@ class ProjectsAPI extends Controller
                 $url = url('getimage/'.base64_encode($product->pr_main_photo));
                 $html .= '
                     <div class="d-flex align-items-center p-1 rounded btn btn-outline-primary btn-sm">
-                        '.$product->pr_prj_location.'
+                        '.$product->pr_prj_location.' - ' . $product->pr_code . '
                     </div>
                 ';
             }

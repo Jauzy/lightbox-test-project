@@ -20,3 +20,5 @@ Route::DELETE('projects/{id}', 'BE\ProjectsAPI@delF');
 Route::POST('projects', 'BE\ProjectsAPI@saveF');
 Route::POST('projects/assign-product', 'BE\ProjectsAPI@assignProduct');
 Route::DELETE('projects/product/{id}', 'BE\ProjectsAPI@delProductAssigned');
+Route::GET('/projects/{id}/export/pdf', 'BE\ProjectsAPI@exportPDF');
+Route::GET('/projects/{id}/export/excel', 'BE\ProjectsAPI@exportExcel');

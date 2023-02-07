@@ -72,21 +72,7 @@
             </tr>
             <tr>
                 <td style="padding: 0em 1.2em;font-size:9px;height:170px;width:330px;" rowspan="3">
-                    With Linear One, we set out to produce a series that works with your vision
-                    instead of crowding it. Acclaim Lighting continually strives for simple goals
-                    during the design process be useful, stay out of the way, and function
-                    wonderfully. Creativity begins with great design and Linear One is
-                    streamlined to work for you. We meticulously craft linear lights that install
-                    with no visible cables and create the clutter-free space your work deserves.
-                    This means that subtlety enhances your aesthetic as Linear One remains
-                    hidden while serving as the powerhouse behind your visual creation. Rened
-                    to work with your creativity, Linear One provides end-to-end modular
-                    functionality that adapts to your needs and never works against them.
-                    Acclaim Lighting is motivated by the passion of its users and strives to
-                    produce the very best solutions in architectural lighting. We create beautiful
-                    products that work for creativity. IK Rating IK10, protection against 5 joule
-                    impact 40cm distance. CERTIFICATION INTERTEK, CE.
-                    DIMENSION : L305mm x W50mm x H63mm
+                    {{$db->pr_content}}
                 </td>
                 <td>
                     na
