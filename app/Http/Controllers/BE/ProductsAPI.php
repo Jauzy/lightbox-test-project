@@ -357,6 +357,10 @@ class ProductsAPI extends Controller
         $drawing->setDescription($name);
         $drawing->setOffsetX(20);
 
+        $drawing->setHeight(1);
+        $drawing->setWidth(200);
+        $drawing->setResizeProportional(false);
+
         $drawing->setPath($path); // put your path and image here
         $drawing->setCoordinates($coord);
         $drawing->setWorksheet($sheet->getActiveSheet());

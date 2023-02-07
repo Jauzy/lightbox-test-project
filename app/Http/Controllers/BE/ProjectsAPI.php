@@ -11,6 +11,7 @@ use Illuminate\Http\File;
 
 use App\Models\Projects;
 use App\Models\ProjectProducts;
+use App\Models\Products;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -178,6 +179,103 @@ class ProjectsAPI extends Controller
             'status' => 'success',
             'message' => 'Success to save data',
         ]);
+    }
+
+    public function exportExcel($id){
+        ini_set('memory_limit', '-1');
+        $editFile = 'export-excell.xlsx';
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($editFile);
+
+        $project = Projects::find($id);
+        $products = ProjectProducts::leftJoin('products', 'products.pr_id', '=', 'project_products.pr_id')
+            ->where('prj_id', $id)->get();
+
+        foreach($products as $product){
+            $this->createSheet($product->pr_id, $spreadsheet, $project);
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. urlencode($project->prj_name.'-'.$project->prj_country.'.xlsx').'"');
+        ob_end_clean();
+        ob_start();
+        $writer->save('php://output');
+    }
+
+    public function createSheet($id, $spreadsheet, $project){
+        $db = Products::find($id);
+
+        $sheet = clone $spreadsheet->getSheetByName('Sheet');
+        $sheet->setTitle($db->pr_code);
+        $spreadsheet->addSheet($sheet);
+
+        $keys = [
+            'pr_application' => 'C10',
+            'pr_code' => 'H10',
+            'pr_luminaire_type' => 'H13',
+            'pr_light_source' => 'H15',
+            'pr_lumen_output' => 'H17',
+            'pr_lamp_type' => 'J15',
+            'pr_optical' => 'H19',
+            'pr_color_temperature' => 'H21',
+            'pr_color_rendering' => 'H23',
+            'pr_finishing' => 'H25',
+            'pr_content' => 'A27',
+            'pr_lumen_maintenance' => 'H29',
+            'pr_ip_rating' => 'H31',
+            'pr_manufacturer' => 'H33',
+            'pr_model' => 'H35',
+            'pr_driver' => 'H38',
+            'pr_supplier' => 'H41',
+            'pr_unit_price' => 'H45',
+        ];
+
+        $sheet->setCellValue('C3', $project->prj_name);
+        $sheet->setCellValue('C10', $db->pr_application);
+        $sheet->setCellValue('H10', 'Code : '.$db->pr_code);
+        $sheet->setCellValue('H13', $db->pr_luminaire_type);
+        $sheet->setCellValue('H15', $db->pr_light_source);
+        $sheet->setCellValue('H17', $db->pr_lumen_output);
+        $sheet->setCellValue('J15', $db->pr_lamp_type);
+        $sheet->setCellValue('H19', $db->pr_optical);
+        $sheet->setCellValue('H21', $db->pr_color_temperature);
+        $sheet->setCellValue('H23', $db->pr_color_rendering);
+        $sheet->setCellValue('H25', $db->pr_finishing);
+        $sheet->setCellValue('A27', $db->pr_content);
+        $sheet->setCellValue('H29', $db->pr_lumen_maintenance);
+        $sheet->setCellValue('H31', $db->pr_ip_rating);
+        $sheet->setCellValue('H33', $db->pr_manufacturer);
+        $sheet->setCellValue('H35', $db->pr_model);
+        $sheet->setCellValue('H38', $db->pr_driver);
+        $sheet->setCellValue('H41', $db->pr_supplier);
+        $sheet->setCellValue('H45', $db->pr_unit_price);
+
+        $main = storage_path('app\\'.$db->pr_main_photo);
+        $dimension = storage_path('app\\'.$db->pr_dimension_photo);
+        $photometric = storage_path('app\\'.$db->pr_photometric_photo);
+
+        $this->draw_image('main', $main, $sheet, 'A14');
+        $this->draw_image('dimension', $dimension, $sheet, 'D16');
+        $this->draw_image('photometric', $photometric, $sheet, 'C31');
+
+    }
+
+    private function draw_image($name, $path, $sheet, $coord){
+        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing->setName($name);
+        $drawing->setDescription($name);
+        $drawing->setOffsetX(20);
+
+        $drawing->setHeight(1);
+        $drawing->setWidth(200);
+        $drawing->setResizeProportional(false);
+
+
+        $drawing->setPath($path); // put your path and image here
+        $drawing->setCoordinates($coord);
+        $drawing->setWorksheet($sheet);
     }
 
 }
