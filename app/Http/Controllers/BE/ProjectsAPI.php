@@ -12,6 +12,7 @@ use Illuminate\Http\File;
 use App\Models\Projects;
 use App\Models\ProjectProducts;
 use App\Models\Products;
+use App\Models\ProductSubmited;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -46,9 +47,10 @@ class ProjectsAPI extends Controller
             ';
         })
         ->addColumn('name', function ($db) {
+            $url = url('projects/'.$db->prj_id.'/form');
             return '
                 <div>
-                    <div>'.$db->prj_name.'</div>
+                    <a href="'.$url.'" class="text-primary">'.$db->prj_name.'</a>
                     <div>'.$db->prj_last_upd.'</div>
                 </div>
             ';
@@ -159,6 +161,17 @@ class ProjectsAPI extends Controller
         $data = Projects::find($id);
         $products = ProjectProducts::leftJoin('products', 'products.pr_id', '=', 'project_products.pr_id')
             ->where('prj_id', $id)->get();
+
+        $temp_product = [];
+        foreach($products as $product){
+            $product_submit = ProductSubmited::where('pr_id', $product->pr_id)->where('stp_prj_id', $data->prj_id)->first();
+            if($product_submit){
+                $temp_product[] = $product_submit;
+            } else
+            $temp_product[] = $product;
+        }
+
+        $products = $temp_product;
 
         $pdf = Pdf::loadView('projects.export-pdf', compact('data', 'products'));
         return $pdf->stream('invoice.pdf');
@@ -285,6 +298,69 @@ class ProjectsAPI extends Controller
         $drawing->setPath($path); // put your path and image here
         $drawing->setCoordinates($coord);
         $drawing->setWorksheet($sheet);
+    }
+
+    public function getProductSubmited($id, $prj_id)
+    {
+        $product = ProductSubmited::where('pr_id', $id)->where('stp_prj_id', $prj_id)->first();
+        if(!$product){
+            $product = Products::find($id);
+        }
+        return $product->toJson();
+    }
+
+    public function saveProductSubmited(Request $request, $prj_id)
+    {
+        try {
+            $inp = $request->inp;
+            $product = Products::find($inp['pr_id']);
+            // search
+            $dbs = ProductSubmited::where('pr_id', $inp['pr_id'])->where('stp_prj_id', $prj_id)->first();
+            if(!$dbs) {
+                $dbs = new ProductSubmited();
+                $dbs->stp_prj_id = $prj_id;
+            }
+            foreach ($inp as $key => $value) {
+                if ($value)
+                    $dbs[$key] = $value;
+            }
+
+            $dbs->pr_main_photo = $product->pr_main_photo;
+            $dbs->pr_dimension_photo = $product->pr_dimension_photo;
+            $dbs->pr_photometric_photo = $product->pr_photometric_photo;
+            $dbs->pr_accessories_photo = $product->pr_accessories_photo;
+
+            $dbs->save();
+
+            $type = [
+                'pr_main_photo' => 'main',
+                'pr_dimension_photo' => 'dimension',
+                'pr_photometric_photo' => 'photometric',
+                'pr_accessories_photo' => 'accessories',
+            ];
+
+            foreach($request->file() as $key => $file){
+                // upload to storage
+                $extension = $file->getClientOriginalExtension();
+                $path = 'Submited\\'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
+                Storage::disk('local')->put($path, file_get_contents($file));
+                $dbs[$key] = $path;
+            }
+
+            $dbs->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Success to save data',
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to save data',
+        ]);
     }
 
 }

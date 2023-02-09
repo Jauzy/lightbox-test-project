@@ -102,7 +102,15 @@ class ProductsAPI extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model', 'action_del'])->toJson();
+            ->editColumn('pr_prj_location', function($db){
+                return '
+                    <div>
+                        <div>'.$db->pr_prj_location.'</div>
+                        <div class="badge bg-primary" onclick="editProduct(\''.$db->pr_id.'\')" style="cursor:pointer">Click to edit alternative</div>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model', 'pr_prj_location'])->toJson();
     }
 
     public function import(Request $request){
