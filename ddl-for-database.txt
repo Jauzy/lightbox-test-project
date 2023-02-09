@@ -1,6 +1,3 @@
-DDL FOR DATABASE
-
-
 -- public.pr_prj_seq_id definition
 
 -- DROP SEQUENCE public.pr_prj_seq_id;
