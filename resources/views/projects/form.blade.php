@@ -98,7 +98,7 @@
                                     <th width="50%">LUMEN</th>
                                     <th>MANUFACTURER / SUPPLIER</th>
                                     <th>MODEL</th>
-                                    <th>APPLICATION LOCATION</th>
+                                    <th>STAGE</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
@@ -209,7 +209,7 @@
                         </select>
                     </div>
                     <div style="width:200px">
-                        <input id="pr_prj_location" class="form-control" placeholder="Application Location" />
+                        <input id="pr_prj_location" class="form-control" placeholder="Stage" />
                     </div>
                     <button class="btn btn-primary" onclick="assign_product()">
                         Assign Product

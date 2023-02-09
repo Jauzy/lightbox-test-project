@@ -83,7 +83,7 @@
                         <td style=";font-weight:700">IP</td> <td>{{$db->pr_ip_rating}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700">STAGE</td> <td>-</td>
+                        <td style=";font-weight:700">STAGE</td> <td>{{$db->pr_prj_location}}</td>
                     </tr>
                     <tr>
                         <td style=";font-weight:700">DESCRIPTION</td> <td>{{$db->pr_content}}</td>

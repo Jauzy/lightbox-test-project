@@ -155,6 +155,15 @@ class ProjectsAPI extends Controller
     // Custom Function Place HERE !
     //-----------------------------------------------------------------------
 
+    public function exportPDF($id){
+        $data = Projects::find($id);
+        $products = ProjectProducts::leftJoin('products', 'products.pr_id', '=', 'project_products.pr_id')
+            ->where('prj_id', $id)->get();
+
+        $pdf = Pdf::loadView('projects.export-pdf', compact('data', 'products'));
+        return $pdf->stream('invoice.pdf');
+    }
+
     public function assignProduct(Request $request){
         $prj_id = $request->prj_id;
         $product_id = $request->product_id;
