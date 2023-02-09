@@ -28,9 +28,6 @@
                             <i class="bx bx-save"></i> Save Form
                         </button>
                         @if ($id)
-                            <a class="btn btn-success" href="{{url('projects/'.$id.'/submit-form')}}">
-                                <i class="bx bx-save"></i> Generate Submission Form
-                            </a>
                             <button class="btn btn-danger" onclick="delF()">
                                 <i class="bx bx-save"></i> Delete Projects
                             </button>
