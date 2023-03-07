@@ -53,9 +53,9 @@
 
             <div id="accordion{{$item->psp_id}}" class="accordion-collapse collapse" aria-labelledby="heading{{$item->psp_id}}">
                 <div class="accordion-body">
-                    <form id="frm" class="mt-2">
+                    <form id="frm-produk-{{$item->product_offered->pr_id}}" class="mt-2">
                         @csrf
-                        <input type="hidden" id="pr_id" name="id" />
+                        <input type="hidden" id="pr_id" name="id" value="{{$item->product_offered->pr_id}}" />
                         <div class="row" style="gap: 10px 0">
                             <div class="col-lg-4">
                                 <label class="form-label">Code</label>
@@ -104,7 +104,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Quantity</label>
-                                <input type="text" value="{{$item->product_offered->pspo_quantity}}" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_quantity]" id="pspo_quantity">
+                                <input type="number" value="{{$item->product_offered->pspo_quantity}}" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_quantity]" id="pspo_quantity">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Accessories Photo</label>
@@ -117,17 +117,16 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="form-label">Accessories</label>
-                                <textarea type="text" value="{{$item->product_offered->pspo_accessories}}" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_accessories]" id="pspo_accessories"></textarea>
+                                <textarea type="text" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_accessories]" id="pspo_accessories">{{$item->product_offered->pspo_accessories}}</textarea>
                             </div>
                             <div class="col-lg-6">
                                 <label class="form-label">Notes</label>
-                                <textarea type="text" value="{{$item->product_offered->pspo_notes}}" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_notes]" id="pspo_notes"></textarea>
+                                <textarea type="text" placeholder='Input Someting' class="form-control form-control-sm" name="inp[pspo_notes]" id="pspo_notes">{{$item->product_offered->pspo_notes}}</textarea>
                             </div>
                         </div>
                         <div class="d-flex flex-wrap mt-1" style="gap:10px">
-                            <button type="button" class="btn btn-flat-danger btn-sm me-auto"><i class="bx bx-trash"></i> Delete</button>
-                            <button type="button" class="btn btn-flat-secondary btn-sm"><i class="bx bx-undo"></i> Reset</button>
-                            <button type="submit" class="btn btn-outline-primary btn-sm"><i class="bx bx-save"></i> Save</button>
+                            <button type="button" class="btn btn-flat-danger btn-sm me-auto" onclick="delFormProduk('{{$item->product_offered->pr_id}}')"><i class="bx bx-trash"></i> Delete</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="saveFormProduk('frm-produk-{{$item->product_offered->pr_id}}')"><i class="bx bx-save"></i> Save</button>
                         </div>
                     </form>
                 </div>

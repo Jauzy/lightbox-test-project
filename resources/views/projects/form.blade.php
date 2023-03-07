@@ -367,5 +367,80 @@
             });
         }
         @endif
+
+        function saveFormProduk(id) {
+            if ($('#'+id).valid()) {
+                var formData = new FormData($('#'+id)[0]);
+                $.ajax({
+                    url: '{{ url('api/projects/product-offered') }}',
+                    type: 'post',
+                    data: formData,
+                    contentType: false, //untuk upload image
+                    processData: false, //untuk upload image
+                    timeout: 300000, // sets timeout to 3 seconds
+                    dataType: 'json',
+                    success: function(e) {
+                        if (e.status == 'success') {
+                            new Noty({
+                                text: e.message,
+                                type: 'info',
+                                progressBar: true,
+                                timeout: 1000
+                            }).show();
+                            setTimeout(function() {
+                                location.reload()
+                            }, 1000);
+                        } else {
+                            new Noty({
+                                text: e.message,
+                                type: 'info',
+                                progressBar: true,
+                                timeout: 1000
+                            }).show();;
+                        }
+                    }
+                });
+            }
+        }
+
+        function delFormProduk(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this data!',
+                showCancelButton: true,
+                confirmButtonText: 'Proceed',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ url("api/projects/product-offered/") }}/'+id,
+                        type: 'delete',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType: 'json',
+                        success: function(e) {
+                            if (e.status == 'success') {
+                                new Noty({
+                                    text: e.message,
+                                    type: 'info',
+                                    progressBar: true,
+                                    timeout: 1000
+                                }).show();
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 1000);
+                            } else {
+                                new Noty({
+                                    text: e.message,
+                                    type: 'info',
+                                    progressBar: true,
+                                    timeout: 1000
+                                }).show();;
+                            }
+                        }
+                    });
+                }
+            })
+        }
     </script>
 @endsection

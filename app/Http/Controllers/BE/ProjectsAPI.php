@@ -290,4 +290,78 @@ class ProjectsAPI extends Controller
         ]);
     }
 
+    public function saveFProdukOffered(Request $request)
+    {
+        try {
+            $inp = $request->inp;
+            $dbs = ProjectStageProductOffered::find($request->id) ?? new ProjectStageProductOffered();
+
+            foreach ($inp as $key => $value) {
+                if ($value)
+                    $dbs[$key] = $value;
+            }
+            $dbs->save();
+
+            $type = [
+                'pr_main_photo' => 'main',
+                'pr_dimension_photo' => 'dimension',
+                'pr_photometric_photo' => 'photometric',
+                'pr_accessories_photo' => 'accessories',
+            ];
+
+            foreach($request->file() as $key => $file){
+                // upload to storage
+                $extension = $file->getClientOriginalExtension();
+                $path = 'public\\Offered\\'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
+                Storage::disk('local')->put($path, file_get_contents($file));
+                $dbs[$key] = $path;
+            }
+
+            $dbs->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Success to save data',
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to save data',
+        ]);
+    }
+
+
+    public function delFProdukOffered($id)
+    {
+        try {
+
+            $psp = ProjectStageProducts::where('psp_pspo_id', $id)->first();
+            $data = ProjectStageProductOffered::find($id);
+            $accessories_photo = $data->pr_accessories_photo;
+
+            if($accessories_photo)
+            Storage::disk('local')->delete($accessories_photo);
+
+            // delete data
+            $psp->delete();
+            $data->delete();
+
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Berhasil menghapus data',
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Gagal menghapus data',
+        ]);
+    }
+
 }

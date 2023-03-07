@@ -8,13 +8,15 @@ Route::prefix('projects')->group(function () {
     Route::POST('/stage/product', 'BE\ProjectsAPI@assignProduct');
     Route::POST('/stage', 'BE\ProjectsAPI@saveStage');
     Route::POST('/list', 'BE\ProjectsAPI@list');
+
+    Route::prefix('product-offered')->group(function () {
+        Route::DELETE('/{id}', 'BE\ProjectsAPI@delFProdukOffered');
+        Route::POST('/', 'BE\ProjectsAPI@saveFProdukOffered');
+    });
+
     Route::GET('/{id}', 'BE\ProjectsAPI@getById');
     Route::DELETE('/{id}', 'BE\ProjectsAPI@delF');
     Route::POST('/', 'BE\ProjectsAPI@saveF');
-    Route::POST('/assign-product', 'BE\ProjectsAPI@assignProduct');
-    Route::DELETE('/product/{id}', 'BE\ProjectsAPI@delProductAssigned');
-    Route::GET('/product/submit/{id}/{prj_id}', 'BE\ProjectsAPI@getProductSubmited');
-    Route::POST('/product/submit/{prj_id}', 'BE\ProjectsAPI@saveProductSubmited');
     Route::GET('/{id}/export/pdf/{ps_id}', 'BE\ProjectsAPI@exportPDF');
     Route::GET('/{id}/export/excel/{ps_id}', 'BE\ProjectsAPI@exportExcel');
 });
