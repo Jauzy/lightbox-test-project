@@ -15,20 +15,33 @@
         {{-- <div class="page_break"></div> --}}
 
 
-        <img src="{{$main_photo}}" style="height:150px;width:250px;position:absolute;top:140px;left:50px" />
-        <img src="{{$dimension_photo}}" style="height:150px;width:250px;position:absolute;top:140px;left:400px" />
-        <img src="{{$photometric_photo}}" style="height:150px;width:250px;position:absolute;top:350px;left:400px" />
+        <img src="{{$main_photo}}" style="height:150px;width:150px;position:absolute;top:140px;left:80px;object-fit:cover" />
+        <img src="{{$dimension_photo}}" style="height:150px;width:150px;position:absolute;top:140px;left:480px;object-fit:cover" />
+        <img src="{{$photometric_photo}}" style="height:150px;width:150px;position:absolute;top:350px;left:480px;object-fit:cover" />
 
         {{-- <img src="https://pict.sindonews.net/dyn/850/pena/news/2022/05/15/700/769971/6-serial-anime-yang-produksinya-dibuat-2-studio-berbeda-ayl.jpg" /> --}}
 
-        <div style="padding:.5em 3em;background:#DDDDDD">
+        {{-- <div style="padding:.5em 3em;background:#DDDDDD">
             <h2>LIGHTING SPECIFICATION</h2>
+        </div> --}}
+
+        <div style="padding:.25em 3em;background:#DDDDDD">
+            <table style="width:100%">
+                <tr>
+                    <td>
+                        <h2  >LIGHTING SPECIFICATION</h2>
+                    </td>
+                    <td align="right">
+                        <img src="lightbox.png" style="width:100px" />
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div style="background:#DDDDDD;padding:.5em;position:absolute;top:330px;width:336px">
             <table>
                 <tr>
-                    <td style=";font-weight:700;width:180px">LUMINAIRE TYPE</td> <td>{{$db->pr_luminaire_type}}</td>
+                    <td style=";font-weight:700;width:180px">LUMINAIRE TYPE</td> <td>{{$db->lumtype->ms_lum_types_name}}</td>
                 </tr>
                 <tr>
                     <td style=";font-weight:700">LAMP TYPE</td> <td>{{$db->pr_lamp_type}}</td>
@@ -55,7 +68,7 @@
                     <td style=";font-weight:700">MODEL</td> <td>{{$db->pr_model}}</td>
                 </tr>
                 <tr>
-                    <td style=";font-weight:700">BRAND</td> <td>{{$db->pr_manufacturer}}</td>
+                    <td style=";font-weight:700">BRAND</td> <td>{{$db->brand->ms_brand_name}}</td>
                 </tr>
                 <tr>
                     <td style=";font-weight:700">DRIVER</td> <td>{{$db->pr_driver}}</td>

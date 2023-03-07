@@ -100,7 +100,7 @@ $(function() {
                     $(node).parent().removeClass('btn-group');
                     setTimeout(function() {
                         $(node).closest('.dt-buttons').removeClass('btn-group').addClass(
-                            'd-inline-flex mt-50');
+                            'd-inline-flex');
                     }, 50);
                 }
             },

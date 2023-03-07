@@ -18,14 +18,15 @@
             <div class="page_break"></div>
             @endif
             @php
+                $db = $db->product_offered;
                 $main_photo = storage_path('app\\'.$db->pr_main_photo);
                 $dimension_photo = storage_path('app\\'.$db->pr_dimension_photo);
                 $photometric_photo = storage_path('app\\'.$db->pr_photometric_photo);
             @endphp
 
-            <img src="{{$main_photo}}" style="height:150px;width:200px;position:absolute;top:140px;left:470px" />
-            <img src="{{$dimension_photo}}" style="height:150px;width:200px;position:absolute;top:340px;left:470px" />
-            <img src="{{$photometric_photo}}" style="height:150px;width:200px;position:absolute;top:550px;left:470px" />
+            <img src="{{$main_photo}}" style="height:150px;width:200px;position:absolute;top:140px;left:470px;object-fit:cover" />
+            <img src="{{$dimension_photo}}" style="height:150px;width:200px;position:absolute;top:340px;left:470px;object-fit:cover" />
+            <img src="{{$photometric_photo}}" style="height:150px;width:200px;position:absolute;top:550px;left:470px;object-fit:cover" />
 
             {{-- <img src="https://pict.sindonews.net/dyn/850/pena/news/2022/05/15/700/769971/6-serial-anime-yang-produksinya-dibuat-2-studio-berbeda-ayl.jpg" /> --}}
 
@@ -33,10 +34,14 @@
                 <table style="width:100%">
                     <tr>
                         <td>
-                            <h2>{{$db->pr_code}}</h2>
+                            <h2 style="max-width:100px">{{$db->pr_code}}</h2>
                         </td>
-                        <td style="text-align:center"><h2>{{$data->prj_name.' - ' . $data->prj_country}}</h2></td>
-                        <td> </td>
+                        <td align="center">
+                            <h2>{{$data->prj_name}}<br/> {{$data->prj_location}}</h2>
+                        </td>
+                        <td align="right">
+                            <img src="lightbox.png" style="width:100px" />
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -47,7 +52,7 @@
                         <td style=";font-weight:700;width:150px">DATE</td> <td>{{$data->prj_last_upd}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700;">LUMINAIRE TYPE</td> <td>{{$db->pr_luminaire_type}}</td>
+                        <td style=";font-weight:700;">LUMINAIRE TYPE</td> <td>{{$db->lumtype->ms_lum_types_name}}</td>
                     </tr>
                     <tr>
                         <td style=";font-weight:700">LAMP TYPE</td> <td>{{$db->pr_lamp_type}}</td>
@@ -74,7 +79,7 @@
                         <td style=";font-weight:700">MODEL</td> <td>{{$db->pr_model}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700">BRAND</td> <td>{{$db->pr_manufacturer}}</td>
+                        <td style=";font-weight:700">BRAND</td> <td>{{$db->brand->ms_brand_name}}</td>
                     </tr>
                     <tr>
                         <td style=";font-weight:700">DRIVER</td> <td>{{$db->pr_driver}}</td>
@@ -83,16 +88,16 @@
                         <td style=";font-weight:700">IP</td> <td>{{$db->pr_ip_rating}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700">STAGE</td> <td>{{$db->pr_prj_location}}</td>
+                        <td style=";font-weight:700">STAGE</td> <td>{{$project->ps_level_name}}</td>
                     </tr>
                     <tr>
                         <td style=";font-weight:700">DESCRIPTION</td> <td>{{$db->pr_content}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700">ACCESSORIES</td> <td>na</td>
+                        <td style=";font-weight:700">ACCESSORIES</td> <td>{{$db->pspo_accessories}}</td>
                     </tr>
                     <tr>
-                        <td style=";font-weight:700">NOTES</td> <td>na</td>
+                        <td style=";font-weight:700">NOTES</td> <td>{{$db->pspo_notes}}</td>
                     </tr>
                 </table>
             </div>

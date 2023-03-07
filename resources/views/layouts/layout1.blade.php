@@ -125,7 +125,14 @@
         .ql-font-inter{
             font-family: 'Inter', sans-serif;
         }
+
+        div.dataTables_wrapper div.dataTables_filter label, div.dataTables_wrapper div.dataTables_length label {
+            margin-top : unset !important;
+            margin-bottom: unset !important;
+        }
+
     </style>
+    @include('layouts.overide-color-css')
     @yield('css_section')
 </head>
 <!-- END: Head-->
@@ -253,8 +260,6 @@
             var $this = $(this);
             $this.wrap('<div class="position-relative"></div>');
             $this.select2({
-            // the following code is used to disable x-scrollbar when click in select input and
-            // take 100% width in responsive also
             dropdownAutoWidth: true,
             width: '100%',
             dropdownParent: $this.parent()

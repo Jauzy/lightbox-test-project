@@ -17,17 +17,24 @@ Route::group(['middleware' => ['web']], function () {
     Route::GET('/', 'FE\LoginController@index');
     // Route::GET('login', 'FE\LoginController@login');
 
-    Route::get('/products', 'FE\Products@index');
-    Route::get('/products/new', 'FE\Products@new');
-    Route::get('/products/{id}/form', 'FE\Products@form');
 
-    Route::get('/projects', 'FE\Projects@index');
-    Route::get('/projects/new', 'FE\Projects@new');
-    Route::get('/projects/{id}/form', 'FE\Projects@form');
 
-    // Route::get('/content/articles', 'FE\ArticlesController@index');
+    Route::get('/projects', 'FE\ProjectsController@index');
+    Route::get('/projects/new', 'FE\ProjectsController@new');
+    Route::get('/projects/{id}/form/{stage?}', 'FE\ProjectsController@form');
 
-    // Route::get('/settings/languages', 'FE\Settings\LanguageController@index');
+    Route::prefix('masterdata')->group(function () {
+        Route::get('/categories', 'FE\Masterdata\CategoriesController@index');
+        Route::get('/brands', 'FE\Masterdata\BrandsController@index');
+        Route::get('/lumtypes', 'FE\Masterdata\LumtypesController@index');
+        Route::get('/company', 'FE\Masterdata\CompanyController@index');
+
+        Route::prefix('products')->group(function () {
+            Route::get('/', 'FE\Products@index');
+            Route::get('/new', 'FE\Products@new');
+            Route::get('/{id}/form', 'FE\Products@form');
+        });
+    });
 });
 
 
@@ -40,3 +47,5 @@ Route::GET('getimage/{file}', function ($file) {
 
     return \Response::make(Storage::disk('local')->get($f), 200, $headers);
 });
+
+

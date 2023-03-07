@@ -50,7 +50,12 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Luminaire Type</label>
-                                <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_luminaire_type]" id="pr_luminaire_type">
+                                <select class="select2 form-control" name="inp[pr_luminaire_type]" id="pr_luminaire_type">
+                                    <option>Select Luminaire Type</option>
+                                    @foreach ($lumtypes as $item)
+                                        <option value="{{$item->ms_lum_types_id}}">{{$item->ms_lum_types_name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Light Source</label>
@@ -58,7 +63,13 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Application</label>
-                                <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_application]" id="pr_application">
+                                {{-- <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_application]" id="pr_application"> --}}
+                                <select class="select2 form-control" name="inp[pr_application]" id="pr_application">
+                                    <option>Select Application</option>
+                                    @foreach ($categories as $item)
+                                        <option value="{{$item->ms_cat_id}}">{{$item->ms_cat_name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Lumen Output</label>
@@ -94,7 +105,13 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Manufacturer</label>
-                                <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_manufacturer]" id="pr_manufacturer">
+                                {{-- <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_manufacturer]" id="pr_manufacturer"> --}}
+                                <select class="select2 form-control" name="inp[pr_manufacturer]" id="pr_manufacturer">
+                                    <option>Select Manufacturer</option>
+                                    @foreach ($brands as $item)
+                                        <option value="{{$item->ms_brand_id}}">{{$item->ms_brand_name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label">Model</label>
@@ -117,7 +134,6 @@
                                 <div id="full-wrapper">
                                     <div id="full-container">
                                         <div id="editor" style="min-height:200px">
-                                            {{-- {!! $text !!} --}}
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +204,7 @@
 
         function edit(id) {
             $.ajax({
-                url: '{{ url('api/products/') }}' + '/' + id,
+                url: '{{ url('api/masterdata/products/') }}' + '/' + id,
                 type: 'get',
                 dataType: 'json',
                 headers: {
@@ -251,7 +267,7 @@
                 var formData = new FormData($('#frm')[0]);
                 formData.append('inp[pr_content]', fullEditor.root.innerHTML)
                 $.ajax({
-                    url: '{{ url('api/products') }}',
+                    url: '{{ url('api/masterdata/products') }}',
                     type: 'post',
                     data: formData,
                     contentType: false, //untuk upload image
@@ -267,7 +283,7 @@
                                 timeout: 1000
                             }).show();
                             setTimeout(function() {
-                                window.location.href = '{{ url('products') }}';
+                                window.location.href = '{{ url('masterdata/products') }}';
                             }, 1000);
                         } else {
                             new Noty({
@@ -283,11 +299,11 @@
         }
 
         function export_pdf(){
-            window.open('{{ url("api/products/$id/export/pdf") }}', '_blank');
+            window.open('{{ url("api/masterdata/products/$id/export/pdf") }}', '_blank');
         }
 
         function export_excel(){
-            window.open('{{ url("api/products/$id/export/excel") }}', '_blank');
+            window.open('{{ url("api/masterdata/products/$id/export/excel") }}', '_blank');
         }
 
         function delF() {
@@ -299,7 +315,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{ url("api/products/$id") }}',
+                        url: '{{ url("api/masterdata/products/$id") }}',
                         type: 'delete',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

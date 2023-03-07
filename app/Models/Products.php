@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Masterdata\MsCategories;
+use App\Models\Masterdata\MsLumTypes;
+use App\Models\Masterdata\MsBrands;
+
 class Products extends Model
 {
     protected $table = "products";
@@ -16,4 +20,16 @@ class Products extends Model
         'pr_model', 'pr_driver', 'pr_supplier', 'pr_unit_price', 'pr_main_photo', 'pr_photometric_photo', 'pr_dimension_photo',
         'pr_accessories_photo'
     ];
+
+    public function category(){
+        return $this->belongsTo(MsCategories::class, 'pr_application', 'ms_cat_id');
+    }
+
+    public function lumtype(){
+        return $this->belongsTo(MsLumTypes::class, 'pr_luminaire_type', 'ms_lum_types_id');
+    }
+
+    public function brand(){
+        return $this->belongsTo(MsBrands::class, 'pr_manufacturer', 'ms_brand_id');
+    }
 }

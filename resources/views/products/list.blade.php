@@ -8,7 +8,7 @@
     Product List
 @endsection
 
-@section('sidebar-size', 'collapsed')
+@section('sidebar-size', 'expanded')
 @section('url_back', url('/'))
 
 @section('content')
@@ -173,20 +173,13 @@
         $(function() {
             dTable = $('#table').DataTable({
                 ajax: {
-                    url: "{{ url('api/products/list') }}",
+                    url: "{{ url('api/masterdata/products/list') }}",
                     type: 'post',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 },
                 columns: [
-                    // {
-                    //     data: 'action',
-                    //     name: 'action',
-                    //     orderable: true,
-                    //     searchable: false,
-                    //     className: 'text-center'
-                    // },
                     { data: 'lumen' },
                     { data: 'pr_application' },
                     { data: 'pr_manufacturer' },
@@ -199,8 +192,6 @@
                 "bFilter": false,
             });
 
-            // $('.dataTables_filter input[type=search]').attr('placeholder', 'Search').attr('class', 'form-control form-control-sm');
-            // $('.dataTables_filter select[name=table_length]').attr('class', 'form-select form-select-sm');
             $('.custom-button').append(`
                 <div class="d-flex flex-wrap" style="gap:10px">
                     <button class="btn btn-success font-weight-semibold text-nowrap" onclick="impor_template()">
@@ -214,11 +205,11 @@
         })
 
         function addnew(){
-            window.location.href = "{{ url('products/new') }}";
+            window.location.href = "{{ url('masterdata/products/new') }}";
         }
 
         function edit(code){
-            window.location.href = "{{ url('products/') }}/" + code + '/form';
+            window.location.href = "{{ url('masterdata/products/') }}/" + code + '/form';
         }
 
         function impor_template() {
@@ -229,7 +220,7 @@
             if ($("#frm-import").valid()) {
                 var formData = new FormData($('#frm-import')[0]);
                 $.ajax({
-                    url: '{{ url("api/products/import") }}',
+                    url: '{{ url("api/masterdata/products/import") }}',
                     type: 'post',
                     data: formData,
                     contentType: false, //untuk upload image
@@ -250,7 +241,7 @@
 
         function detail(id){
             $.ajax({
-                url: '{{ url('api/products/') }}' + '/' + id,
+                url: '{{ url('api/masterdata/products/') }}' + '/' + id,
                 type: 'get',
                 dataType: 'json',
                 headers: {

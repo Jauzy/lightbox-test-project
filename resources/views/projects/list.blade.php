@@ -8,7 +8,7 @@
     Project List
 @endsection
 
-@section('sidebar-size', 'collapsed')
+@section('sidebar-size', 'expanded')
 @section('url_back', url('/'))
 
 @section('content')
@@ -28,8 +28,8 @@
                                         {{-- <th width="5%">#</th> --}}
                                         <th>Name</th>
                                         <th>Location</th>
-                                        <th width="60%">Products</th>
-                                        <th>Action</th>
+                                        <th>Company</th>
+                                        <th>Level</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -62,9 +62,9 @@
                 },
                 columns: [
                     { data: 'name' },
-                    { data: 'location' },
+                    { data: 'prj_location' },
+                    { data: 'company' },
                     { data: 'level' },
-                    { data: 'action' },
                 ],
                 order: [
                     [1, 'desc']

@@ -9,7 +9,7 @@ class LoginController extends Controller
 {
     public function index()
     {
-        return redirect(url('/products'));
+        return redirect(url('/masterdata/products'));
         // if (session()->get('login')) {
         //     return redirect(url('/dashboard/contacts'));
         // } else {

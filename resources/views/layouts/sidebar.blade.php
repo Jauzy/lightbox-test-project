@@ -26,16 +26,43 @@
             <li class="navigation-header"><span data-i18n="Apps &amp; Pages">Web Content</span><i
                     data-feather="more-horizontal"></i>
             </li>
-            <li class="nav-item {{ request()->path() == '/products' ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="{{ url('/products') }}">
-                    <i data-feather="file"></i>
-                    <span class="menu-title text-truncate">Products</span>
-                </a>
-            </li>
+
             <li class="nav-item {{ request()->path() == '/projects' ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="{{ url('/projects') }}">
                     <i data-feather="file"></i>
                     <span class="menu-title text-truncate">Projects</span>
+                </a>
+            </li>
+
+            <li class="navigation-header"><span data-i18n="Apps &amp; Pages">Masterdata</span><i data-feather="more-horizontal"></i>
+            <li class="nav-item {{ request()->path() == '/masterdata/categories' ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="{{ url('/masterdata/categories') }}">
+                    <i data-feather="file"></i>
+                    <span class="menu-title text-truncate">Categories</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->path() == '/masterdata/brands' ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="{{ url('/masterdata/brands') }}">
+                    <i data-feather="file"></i>
+                    <span class="menu-title text-truncate">Brands</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->path() == '/masterdata/lumtypes' ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="{{ url('/masterdata/lumtypes') }}">
+                    <i data-feather="file"></i>
+                    <span class="menu-title text-truncate">Luminaire Types</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->path() == '/masterdata/company' ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="{{ url('/masterdata/company') }}">
+                    <i data-feather="file"></i>
+                    <span class="menu-title text-truncate">Companies</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->path() == 'masterdata/products' ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="{{ url('masterdata/products') }}">
+                    <i data-feather="file"></i>
+                    <span class="menu-title text-truncate">Products</span>
                 </a>
             </li>
         </ul>

@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
 
 use App\Models\Products;
+use App\Models\Masterdata\MsCategories;
+use App\Models\Masterdata\MsLumTypes;
+use App\Models\Masterdata\MsBrands;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -26,13 +29,20 @@ class ProductsAPI extends Controller
         $prj_id = $request->prj_id;
 
         if($prj_id){
-            $data = Products::leftJoin('project_products', 'project_products.pr_id', '=', 'products.pr_id')
+            $data = Products::with('brand','category','lumtype')
+                ->leftJoin('project_products', 'project_products.pr_id', '=', 'products.pr_id')
                 ->where('project_products.prj_id', $prj_id)
                 ->get();
         } else {
-            $data = Products::all();
+            $data = Products::with('brand','category','lumtype')->get();
         }
+
         return datatables($data)
+            ->addColumn('checkbox', function ($db) {
+                return '
+                    <input type="checkbox" class="form-check-input" name="selected_products[]" value="'.$db->pr_id.'">
+                ';
+            })
             ->addColumn('action', function ($db) {
                 $action = '
                     <a class="dropdown-item d-flex align-items-center text-secondary" style="gap:5px" href="javascript:detail(\''.$db->pr_id.'\')">
@@ -76,12 +86,15 @@ class ProductsAPI extends Controller
                     <div class="d-flex align-items-center" style="gap:10px">
                         <img src="'.$url.'" alt="image" class="rounded" style="height:80px;width:80px;object-fit:contain">
                         <div>
-                            <a href="'.url('products/'.$db->pr_id.'/form').'" class="text-primary fw-bolder"><strong>'.$db->pr_code.'</strong></a>
-                            <div>'.$db->pr_luminaire_type.'</div>
+                            <a href="'.url('masterdata/products/'.$db->pr_id.'/form').'" class="text-primary fw-bolder"><strong>'.$db->pr_code.'</strong></a>
+                            <div>'.$db->lumtype->ms_lum_types_name.'</div>
                             <div>'.$db->pr_lamp_type.' | '.$db->pr_light_source.' | '.$db->pr_lumen_output.'</div>
                         </div>
                     </div>
                 ';
+            })
+            ->editColumn('pr_application', function ($db) {
+                return $db->category->ms_cat_name;
             })
             ->addColumn('code', function ($db) {
                 return $db->pr_code;
@@ -89,7 +102,7 @@ class ProductsAPI extends Controller
             ->editColumn('pr_manufacturer', function ($db) {
                 return '
                 <div>
-                    <div>'.$db->pr_manufacturer.'</div>
+                    <div>'.$db->brand->ms_brand_name.'</div>
                     <div>'.$db->pr_supplier.'</div>
                 </div>
                 ';
@@ -110,7 +123,7 @@ class ProductsAPI extends Controller
                     </div>
                 ';
             })
-            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model', 'pr_prj_location'])->toJson();
+            ->rawColumns(['action','lumen', 'pr_manufacturer', 'pr_model', 'pr_prj_location', 'checkbox'])->toJson();
     }
 
     public function import(Request $request){
@@ -165,6 +178,37 @@ class ProductsAPI extends Controller
         }
 
         $data['pr_code'] = str_replace('Code : ', '', $data['pr_code']);
+
+        $brand = MsBrands::whereRaw("LOWER(ms_brand_name) = LOWER('$data[pr_manufacturer]')")->first();
+        if($brand){
+            $data['pr_manufacturer'] = $brand->ms_brand_id;
+        } else {
+            $brand = new MsBrands();
+            $brand->ms_brand_name = $data['pr_manufacturer'];
+            $brand->save();
+            $data['pr_manufacturer'] = $brand->ms_brand_id;
+        }
+
+        $lumtype = MsLumTypes::whereRaw("LOWER(ms_lum_types_name) = LOWER('$data[pr_luminaire_type]')")->first();
+        if($lumtype){
+            $data['pr_luminaire_type'] = $lumtype->ms_lum_types_id;
+        } else {
+            $lumtype = new MsLumTypes();
+            $lumtype->ms_lum_types_name = $data['pr_luminaire_type'];
+            $lumtype->save();
+            $data['pr_luminaire_type'] = $lumtype->ms_lum_types_id;
+        }
+
+        $category = MsCategories::whereRaw("LOWER(ms_cat_name) = LOWER('$data[pr_application]')")->first();
+        if($category){
+            $data['pr_application'] = $category->ms_cat_id;
+        } else {
+            $category = new MsCategories();
+            $category->ms_cat_name = $data['pr_application'];
+            $category->save();
+            $data['pr_application'] = $category->ms_cat_id;
+        }
+
         $data->save();
         return $data;
     }
@@ -173,19 +217,19 @@ class ProductsAPI extends Controller
         $drawing = $sheet->getDrawingCollection();
         foreach($drawing as $draw){
             if($draw->getCoordinates() == 'A14'){
-                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.main.png';
+                $path = 'public\\Product\\'.$model->pr_code.'-'.$model->pr_id.'.main.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_main_photo = $path;
             }
             else if($draw->getCoordinates() == 'D15' || $draw->getCoordinates() == 'D16' || $draw->getCoordinates() == 'D17'){
-                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.dimension.png';
+                $path = 'public\\Product\\'.$model->pr_code.'-'.$model->pr_id.'.dimension.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_dimension_photo = $path;
             }
             else if($draw->getCoordinates() == 'C31' || $draw->getCoordinates() == 'C30'){
-                $path = 'Product\\'.$model->pr_code.'-'.$model->pr_id.'.photometric.png';
+                $path = 'public\\Product\\'.$model->pr_code.'-'.$model->pr_id.'.photometric.png';
                 $content = file_get_contents($draw->getPath());
                 Storage::disk('local')->put($path, $content);
                 $model->pr_photometric_photo = $path;
@@ -222,7 +266,7 @@ class ProductsAPI extends Controller
             foreach($request->file() as $key => $file){
                 // upload to storage
                 $extension = $file->getClientOriginalExtension();
-                $path = 'Product\\'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
+                $path = 'public\\Product\\'.$dbs->pr_code.'-'.$dbs->pr_id.'.'.$type[$key].'.'.$extension;
                 Storage::disk('local')->put($path, file_get_contents($file));
                 $dbs[$key] = $path;
             }
@@ -297,7 +341,7 @@ class ProductsAPI extends Controller
     public function exportExcel($id){
         ini_set('memory_limit', '-1');
 
-        $db = Products::find($id);
+        $db = Products::with('category', 'brand', 'lumtype')->find($id);
 
         $editFile = 'export-excell.xlsx';
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($editFile);
@@ -324,9 +368,9 @@ class ProductsAPI extends Controller
             'pr_unit_price' => 'H45',
         ];
 
-        $sheet->setCellValue('C10', $db->pr_application);
+        $sheet->setCellValue('C10', $db->category->ms_cat_name);
         $sheet->setCellValue('H10', $db->pr_code);
-        $sheet->setCellValue('H13', $db->pr_luminaire_type);
+        $sheet->setCellValue('H13', $db->lumtype->ms_lum_types_name);
         $sheet->setCellValue('H15', $db->pr_light_source);
         $sheet->setCellValue('H17', $db->pr_lumen_output);
         $sheet->setCellValue('J15', $db->pr_lamp_type);
@@ -337,7 +381,7 @@ class ProductsAPI extends Controller
         $sheet->setCellValue('A27', $db->pr_content);
         $sheet->setCellValue('H29', $db->pr_lumen_maintenance);
         $sheet->setCellValue('H31', $db->pr_ip_rating);
-        $sheet->setCellValue('H33', $db->pr_manufacturer);
+        $sheet->setCellValue('H33', $db->brand->ms_brand_name);
         $sheet->setCellValue('H35', $db->pr_model);
         $sheet->setCellValue('H38', $db->pr_driver);
         $sheet->setCellValue('H41', $db->pr_supplier);

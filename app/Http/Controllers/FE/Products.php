@@ -5,6 +5,10 @@ namespace App\Http\Controllers\FE;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\Masterdata\MsCategories;
+use App\Models\Masterdata\MsLumTypes;
+use App\Models\Masterdata\MsBrands;
+
 class Products extends Controller
 {
     public function index()
@@ -13,10 +17,16 @@ class Products extends Controller
     }
 
     public function form($id){
-        return view('products.form', ['id' => $id]);
+        $brands = MsBrands::all();
+        $categories = MsCategories::all();
+        $lumTypes = MsLumTypes::all();
+        return view('products.form', ['id' => $id, 'brands' => $brands, 'categories' => $categories, 'lumtypes' => $lumTypes]);
     }
 
     public function new(){
-        return view('products.form', ['id' => null]);
+        $brands = MsBrands::all();
+        $categories = MsCategories::all();
+        $lumTypes = MsLumTypes::all();
+        return view('products.form', ['id' => null, 'brands' => $brands, 'categories' => $categories, 'lumtypes' => $lumTypes]);
     }
 }
