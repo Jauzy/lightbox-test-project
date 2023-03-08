@@ -23,7 +23,7 @@
                 <div class="card card-body">
 
                     <div style="gap:10px" class="d-flex align-items-center flex-wrap">
-                        <h4 class="mb-0 me-auto fw-bolder">Projects Form</h4>
+                        <h4 class="mb-0 me-auto fw-bolder">Project Form</h4>
                         <button class="btn btn-primary" onclick="save()">
                             <i class="bx bx-save"></i> Save Project Info
                         </button>

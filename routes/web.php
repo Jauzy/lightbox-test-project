@@ -17,11 +17,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::GET('/', 'FE\LoginController@index');
     // Route::GET('login', 'FE\LoginController@login');
 
-
-
     Route::get('/projects', 'FE\ProjectsController@index');
     Route::get('/projects/new', 'FE\ProjectsController@new');
     Route::get('/projects/{id}/form/{stage?}', 'FE\ProjectsController@form');
+
+    Route::get('/tender/submission-form/{id}', 'FE\TenderForm@index');
 
     Route::prefix('masterdata')->group(function () {
         Route::get('/categories', 'FE\Masterdata\CategoriesController@index');
