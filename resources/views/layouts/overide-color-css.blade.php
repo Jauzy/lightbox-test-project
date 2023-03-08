@@ -44,4 +44,7 @@
         color:#2A4C6B !important;
     }
 
+    .form-check-primary .form-check-input:checked {
+        background-color: #2A4C6B !important
+    }
 </style>

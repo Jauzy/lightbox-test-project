@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BE\LoginControllerAPI;
 
 Route::prefix('projects')->group(function () {
+    Route::POST('/stage/toggle-tender', 'BE\ProjectsAPI@toggleTender');
     Route::POST('/stage/product', 'BE\ProjectsAPI@assignProduct');
     Route::POST('/stage', 'BE\ProjectsAPI@saveStage');
     Route::POST('/list', 'BE\ProjectsAPI@list');

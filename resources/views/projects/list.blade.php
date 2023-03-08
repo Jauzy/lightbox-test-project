@@ -87,5 +87,24 @@
         function edit(code){
             window.location.href = "{{ url('projects/') }}/" + code + '/form';
         }
+
+        function toggleTender(id){
+            $.ajax({
+                url: "{{ url('api/projects/stage/toggle-tender') }}",
+                type: 'post',
+                data: {
+                    id: id,
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data){
+                    if(data.status == 'success'){
+                        dTable.draw();
+                    }
+                }
+            })
+        }
+
     </script>
 @endsection

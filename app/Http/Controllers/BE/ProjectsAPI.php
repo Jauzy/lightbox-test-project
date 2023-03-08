@@ -27,7 +27,10 @@ class ProjectsAPI extends Controller
 
     public function list()
     {
-        $data = Projects::with('company', 'stages')->get();
+        $data = Projects::with(array('company', 'stages' => function($q){
+            $q->orderBy('ps_id', 'asc');
+        }))->get();
+
         return datatables($data)
         ->addColumn('name', function ($db) {
             $url = url('projects/'.$db->prj_id.'/form');
@@ -43,15 +46,40 @@ class ProjectsAPI extends Controller
         })
         ->addColumn('level', function ($db) {
 
-            $html = '<div class="d-flex flex-column" style="gap:10px">';
+            $html = '<div class="d-flex flex-column" style="gap:5px">';
 
             foreach($db->stages as $item){
                 $url = url('/projects/'.$item->ps_prj_id.'/form/'.$item->ps_id);
+                $pdf = url("api/projects/$item->ps_prj_id/export/pdf/$item->ps_id");
+                $excel = url("api/projects/$item->ps_prj_id/export/excel/$item->ps_id");
+                $form = url('tender/submission-form/'.$item->ps_id);
                 $html .= '
-                    <a href="'.$url.'" class="btn btn-outline-primary btn-sm" style="max-width:300px">
-                        '.$item->ps_level_name. '
-                    </a>
+                    <div class="d-flex align-items-center" style="gap:10px">
+                        <a href="'.$url.'" class="flex-fill btn btn-outline-primary btn-sm">
+                            '.$item->ps_level_name. '
+                        </a>
+                        <a class="btn btn-sm btn-icon btn-outline-danger" href="'.$pdf.'" target="_blank">
+                            <i class="bx bxs-file-pdf"></i>
+                        </a>
+                        <a class="btn btn-sm btn-icon btn-outline-success" href="'.$excel.'" target="_blank">
+                            <i class="bx bxs-spreadsheet"></i>
+                        </a>
+                        |
+                        <div class="form-check form-check-primary form-switch">
+                            <input type="checkbox" '.($item->ps_open_tender == 1 ? 'checked' : '').'
+                                class="form-check-input toggle-tender"
+                                onclick="toggleTender(`'.$item->ps_id.'`)" >
+                        </div>
                 ';
+
+                if($item->ps_open_tender == 1)
+                    $html .= '
+                        <a class="btn btn-sm btn-icon btn-outline-secondary" href="'.$form.'" target="_blank">
+                            <i class="bx bx-search"></i>
+                        </a>
+                    ';
+                $html .= '</div>';
+
             }
 
             $html .= '</div>';
@@ -361,6 +389,23 @@ class ProjectsAPI extends Controller
         return response()->json([
             'status' => 'error',
             'message' => 'Gagal menghapus data',
+        ]);
+    }
+
+    public function toggleTender(Request $request){
+        $id = $request->id;
+        $status = $request->status;
+
+        $data = ProjectStages::find($id);
+        if($data->ps_open_tender == 1)
+            $data->ps_open_tender = 0;
+        else
+            $data->ps_open_tender = 1;
+        $data->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil menghapus data',
         ]);
     }
 
