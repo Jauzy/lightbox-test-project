@@ -56,6 +56,17 @@ class TenderComparison extends Controller
         return $pdf->stream('tender-comparison.pdf');
     }
 
+    public function printPDFSimple($id, Request $request){
+        $data['project'] = ProjectStages::with('stage_products', 'stage', 'tenders')->where('ps_id', $id)->first();
+
+        $data['filter_companies'] = $request->query('companies');
+        $data['filter_date'] = $request->query('date');
+        $data['filter_speces'] = $request->query('speces');
+
+        $pdf = Pdf::loadView('tender.simple-comparison-pdf', $data)->setPaper('a4', 'landscape');
+        return $pdf->stream('tender-comparison.pdf');
+    }
+
     public function exportExcel($id, $ps_id){
         ini_set('memory_limit', '-1');
         $editFile = 'export-excell.xlsx';

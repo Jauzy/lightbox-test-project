@@ -14,7 +14,7 @@ use App\Models\ProjectStages;
 
 class TenderComparison extends Controller
 {
-    public function index($id){
+    public function index($id, Request $request){
         $data['id'] = $id;
         $data['company'] = MsCompany::all();
         $data['stages'] = MsStages::all();
@@ -48,6 +48,28 @@ class TenderComparison extends Controller
 
         $data['companies_product'] = $companies_product;
 
+        $data['filter_companies'] = $request->query('companies');
+        $data['filter_date'] = $request->query('date');
+        $data['filter_speces'] = $request->query('speces');
+
+
         return view('tender.comparison', $data);
+    }
+
+    public function simple($id, Request $request){
+        $data['id'] = $id;
+        $data['company'] = MsCompany::all();
+        $data['stages'] = MsStages::all();
+        $data['brands'] = MsBrands::all();
+        $data['categories'] = MsCategories::all();
+        $data['lumtypes'] = MsLumTypes::all();
+        $data['project'] = ProjectStages::with('stage_products', 'stage', 'tenders')->where('ps_id', $id)->first();
+
+        $data['filter_companies'] = $request->query('companies');
+        $data['filter_date'] = $request->query('date');
+        $data['filter_speces'] = $request->query('speces');
+
+
+        return view('tender.simple-comparison', $data);
     }
 }

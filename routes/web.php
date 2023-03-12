@@ -24,6 +24,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/tender/submission-form/success', 'FE\TenderForm@success');
     Route::get('/tender/submission-form/{id}', 'FE\TenderForm@index');
     Route::get('/tender/comparison/{id}', 'FE\TenderComparison@index');
+    Route::get('/tender/comparison-simple/{id}', 'FE\TenderComparison@simple');
 
     Route::prefix('masterdata')->group(function () {
         Route::get('/categories', 'FE\Masterdata\CategoriesController@index');

@@ -25,6 +25,7 @@ Route::prefix('projects')->group(function () {
 Route::prefix('tender')->group(function () {
     Route::POST('/form', 'BE\TenderForm@saveF');
     Route::GET('/comparison/pdf/{id}', 'BE\TenderComparison@printPDF');
+    Route::GET('/comparison-simple/pdf/{id}', 'BE\TenderComparison@printPDFSimple');
     Route::GET('/comparison/excel/{id}', 'BE\TenderComparison@exportExcel');
 
 });

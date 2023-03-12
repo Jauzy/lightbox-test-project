@@ -17,36 +17,36 @@
     <div class="row align-items-end">
         <div class="col-lg-3">
             <label class="form-label">For Company</label>
-            <select class="select2 form-control" multiple placeholder="All Companies">
+            <select class="select2 form-control" multiple placeholder="All Companies" id="filter-companies">
                 @foreach ($project->tenders as $t)
-                    <option value="{{$t->pst_id}}">{{$t->psto_company_name}}</option>
+                    <option value="{{$t->pst_id}}" {{str_contains($filter_companies, $t->pst_id) ? 'selected' : ''}}>{{$t->psto_company_name}}</option>
                 @endforeach
             </select>
             <small class="text-danger">* Leave it blank to filter all companies</small>
         </div>
         <div class="col-lg-3">
             <label class="form-label">For Spec</label>
-            <select class="select2 form-control" multiple placeholder="All Speces">
+            <select class="select2 form-control" multiple placeholder="All Speces" id="filter-speces">
                 @foreach ($project->stage_products as $p)
-                    <option value="{{$p->psp_pr_id}}">{{$p->product->pr_code}}</option>
+                    <option value="{{$p->psp_pr_id}}" {{str_contains($filter_speces, $p->psp_pr_id) ? 'selected' : ''}}>{{$p->product->pr_code}}</option>
                 @endforeach
             </select>
             <small class="text-danger">* Leave it blank to filter all speces</small>
         </div>
         <div class="col-lg-3">
             <label class="form-label">From Date</label>
-            <input class="form-control mb-2" type="date" />
+            <input class="form-control mb-2" type="date" id="filter-date" value="{{$filter_date}}" />
         </div>
         <div class="col-lg-3 d-flex align-items-center" style="gap:10px">
-            <button class="btn btn-primary mb-2 flex-fill">
+            <button class="btn btn-primary mb-2 flex-fill" onclick="filterNow()">
                 Filter Tenders
             </button>
-            <a href="{{url('api/tender/comparison/excel/'.$id)}}" target="_blank" class="btn btn-success mb-2 btn-icon">
+            <button onclick="exportExcel()" target="_blank" class="btn btn-success mb-2 btn-icon">
                 <i class="bx bxs-spreadsheet"></i>
-            </a>
-            <a href="{{url('api/tender/comparison/pdf/'.$id)}}" target="_blank" class="btn btn-danger btn-icon mb-2">
+            </button>
+            <button onclick="exportPDF()" target="_blank" class="btn btn-danger btn-icon mb-2">
                 <i class="bx bxs-file-pdf"></i>
-            </a>
+            </button>
         </div>
     </div>
 </div>
@@ -55,10 +55,10 @@
 <div class="d-flex flex-wrap  align-items-center" style="gap:10px">
     <ul class="nav nav-tabs mb-0" role="tablist">
         <li class="nav-item">
-            <a class="nav-link">Comparison</a>
+            <a class="nav-link" href="{{url('/tender/comparison-simple/'.$id)}}">Comparison</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active">Detailed Comparison</a>
+            <a class="nav-link active" href="{{url('/tender/comparison/'.$id)}}">Detailed Comparison</a>
         </li>
     </ul>
 </div>
@@ -119,5 +119,66 @@
         $(document).ready(function () {
             $('.select2').select2();
         });
+
+        function filterNow(){
+            let companies = $('#filter-companies').val();
+            let speces = $('#filter-speces').val();
+            let date = $('#filter-date').val();
+
+            if(companies == null || companies.length == 0){
+                companies = '';
+            }else{
+                companies = companies.join(',');
+            }
+
+            if(speces == null || speces.length == 0){
+                speces = '';
+            }else{
+                speces = speces.join(',');
+            }
+
+            window.location.href = "{{url('tender/comparison/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date;
+        }
+
+        function exportExcel(){
+            let companies = $('#filter-companies').val();
+            let speces = $('#filter-speces').val();
+            let date = $('#filter-date').val();
+
+            if(companies == null || companies.length == 0){
+                companies = '';
+            }else{
+                companies = companies.join(',');
+            }
+
+            if(speces == null || speces.length == 0){
+                speces = '';
+            }else{
+                speces = speces.join(',');
+            }
+
+            window.open("{{url('api/tender/comparison/excel/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date)
+        }
+
+        function exportPDF(){
+            let companies = $('#filter-companies').val();
+            let speces = $('#filter-speces').val();
+            let date = $('#filter-date').val();
+
+            if(companies == null || companies.length == 0){
+                companies = '';
+            }else{
+                companies = companies.join(',');
+            }
+
+            if(speces == null || speces.length == 0){
+                speces = '';
+            }else{
+                speces = speces.join(',');
+            }
+
+            window.open("{{url('api/tender/comparison/pdf/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date)
+
+        }
     </script>
 @endsection
