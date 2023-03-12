@@ -3,10 +3,10 @@
     @if ($selected_stage)
     <button class="btn btn-primary" onclick="searchProduct()">Add New Products</button>
     <button class="btn btn-secondary" onclick="export_pdf()">
-        <i class="bx bx-save"></i> Export PDF
+        <i class="bx bxs-file-pdf"></i> Export PDF
     </button>
     <button class="btn btn-success" onclick="export_excel()">
-        <i class="bx bx-save"></i> Export Excel
+        <i class="bx bxs-spreadsheet"></i> Export Excel
     </button>
     @else
     <button class="btn btn-primary" disabled>Add New Products</button>

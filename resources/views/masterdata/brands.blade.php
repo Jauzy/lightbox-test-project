@@ -72,15 +72,75 @@
         </div>
     </div>
     <!--/ add new card modal  -->
+
+    <div class="modal fade" id="modal-search-product" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-transparent">
+                    <div class="modal-title"><i data-feather="filter"></i> <span id="file-title">Search Products</span></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-2 position-relative">
+                    <table class="table table-striped" id="table-product">
+                        <thead>
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="50%">LUMEN</th>
+                                <th>APPLICATION</th>
+                                <th>MANUFACTURER / SUPPLIER</th>
+                                <th>MODEL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input id="brand_id" type="hidden" />
+
 @endsection
 
 @section('js_section')
     <script>
         var dTable = $('#table'),
-            select = $('.select2')
+            select = $('.select2'), tableProduct = $('#table-product')
+
+        function searchProduct(id){
+            $('#brand_id').val(id)
+            tableProduct.draw()
+            $('#modal-search-product').modal('show')
+        }
 
         // List datatable
         $(function() {
+            tableProduct = $('#table-product').DataTable({
+                ajax: {
+                    url: "{{ url('api/masterdata/products/list') }}",
+                    type: 'post',
+                    data: function(d) {
+                        d.brand_id = $('#brand_id').val()
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                },
+                buttons: [],
+                columns: [
+                    { data: 'checkbox' },
+                    { data: 'lumen' },
+                    { data: 'pr_application' },
+                    { data: 'pr_manufacturer' },
+                    { data: 'pr_model' },
+                ],
+                order: [
+                    [1, 'desc']
+                ],
+                "bFilter": false,
+            });
+
             dTable = $('#table').DataTable({
                 ajax: {
                     url: "{{ url('api/masterdata/brands/dt') }}",

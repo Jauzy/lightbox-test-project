@@ -24,6 +24,12 @@ class TenderForm extends Controller
         $data['lumtypes'] = MsLumTypes::all();
         $data['project'] = ProjectStages::with('stage_products', 'stage')->where('ps_id', $id)->first();
 
+        $data['id'] = $id;
+
         return view('tender.submission-form', $data);
+    }
+
+    public function success(){
+        return view('tender.success-submit-form');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Masterdata\MsStages;
 use App\Models\Projects;
 use App\Models\ProjectStageProducts;
+use App\Models\ProjectStageTender;
 
 class ProjectStages extends Model
 {
@@ -24,4 +25,9 @@ class ProjectStages extends Model
     public function stage_products(){
         return $this->hasMany(ProjectStageProducts::class, 'psp_ps_id', 'ps_id');
     }
+
+    public function tenders(){
+        return $this->hasMany(ProjectStageTender::class, 'pst_ps_id', 'ps_id');
+    }
+
 }

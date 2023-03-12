@@ -17,7 +17,9 @@ class CategoriesControllerAPI extends Controller
         return datatables($data)
             ->addIndexColumn()
             ->addColumn('action', function ($db) {
-                return '<a href="javascript:edit(\''.$db->ms_cat_id.'\')" title="Edit Data" class="btn btn-sm btn-icon btn-primary"><i class="bx bx-edit"></i></a>
+                return '
+                <a href="javascript:searchProduct(\''.$db->ms_cat_id.'\')" title="Filter Data" class="btn btn-sm btn-icon btn-secondary"><i class="bx bx-search"></i></a>
+                <a href="javascript:edit(\''.$db->ms_cat_id.'\')" title="Edit Data" class="btn btn-sm btn-icon btn-primary"><i class="bx bx-edit"></i></a>
                         <a href="javascript:del(\''.$db->ms_cat_id.'\')" title="Delete Data" class="btn btn-sm btn-icon btn-danger"><i class="bx bx-trash"></i></a>';
             })
             ->rawColumns(['action'])->toJson();

@@ -256,6 +256,7 @@
                 });
             }
         })
+        if(select)
         select.each(function () {
             var $this = $(this);
             $this.wrap('<div class="position-relative"></div>');

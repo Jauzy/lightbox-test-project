@@ -22,6 +22,13 @@ Route::prefix('projects')->group(function () {
     Route::GET('/{id}/export/excel/{ps_id}', 'BE\ProjectsAPI@exportExcel');
 });
 
+Route::prefix('tender')->group(function () {
+    Route::POST('/form', 'BE\TenderForm@saveF');
+    Route::GET('/comparison/pdf/{id}', 'BE\TenderComparison@printPDF');
+    Route::GET('/comparison/excel/{id}', 'BE\TenderComparison@exportExcel');
+
+});
+
 Route::prefix('masterdata')->group(function () {
     Route::prefix('categories')->group(function () {
         Route::POST('/dt', 'BE\Masterdata\CategoriesControllerAPI@dt');

@@ -27,17 +27,30 @@ class ProductsAPI extends Controller
     public function list(Request $request)
     {
         $prj_id = $request->prj_id;
+        $brand_id = $request->brand_id;
+        $lumtype_id = $request->lumtype_id;
+        $category_id = $request->category_id;
 
         if($prj_id){
             $data = Products::with('brand','category','lumtype')
                 ->leftJoin('project_products', 'project_products.pr_id', '=', 'products.pr_id')
-                ->where('project_products.prj_id', $prj_id)
-                ->get();
+                ->where('project_products.prj_id', $prj_id);
         } else {
-            $data = Products::with('brand','category','lumtype')->get();
+            $data = Products::with('brand','category','lumtype');
         }
 
-        return datatables($data)
+        if($brand_id){
+            $data = $data->where('pr_manufacturer', $brand_id);
+        }
+        if($lumtype_id){
+            $data = $data->where('pr_luminaire_type', $lumtype_id);
+        }
+        if($category_id){
+            $data = $data->where('pr_application', $category_id);
+        }
+
+
+        return datatables($data->get())
             ->addColumn('checkbox', function ($db) {
                 return '
                     <input type="checkbox" class="form-check-input" name="selected_products[]" value="'.$db->pr_id.'">
@@ -86,8 +99,7 @@ class ProductsAPI extends Controller
                     <div class="d-flex align-items-center" style="gap:10px">
                         <img src="'.$url.'" alt="image" class="rounded" style="height:80px;width:80px;object-fit:contain">
                         <div>
-                            <a href="'.url('masterdata/products/'.$db->pr_id.'/form').'" class="text-primary fw-bolder"><strong>'.$db->pr_code.'</strong></a>
-                            <div>'.$db->lumtype->ms_lum_types_name.'</div>
+                            <a href="'.url('masterdata/products/'.$db->pr_id.'/form').'" class="text-primary fw-bolder"><strong>'.$db->lumtype->ms_lum_types_name.'</strong></a>
                             <div>'.$db->pr_lamp_type.' | '.$db->pr_light_source.' | '.$db->pr_lumen_output.'</div>
                         </div>
                     </div>

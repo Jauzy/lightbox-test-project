@@ -53,6 +53,7 @@ class ProjectsAPI extends Controller
                 $pdf = url("api/projects/$item->ps_prj_id/export/pdf/$item->ps_id");
                 $excel = url("api/projects/$item->ps_prj_id/export/excel/$item->ps_id");
                 $form = url('tender/submission-form/'.$item->ps_id);
+                $comparison = url('tender/comparison/'.$item->ps_id);
                 $html .= '
                     <div class="d-flex align-items-center" style="gap:10px">
                         <a href="'.$url.'" class="flex-fill btn btn-outline-primary btn-sm">
@@ -63,6 +64,9 @@ class ProjectsAPI extends Controller
                         </a>
                         <a class="btn btn-sm btn-icon btn-outline-success" href="'.$excel.'" target="_blank">
                             <i class="bx bxs-spreadsheet"></i>
+                        </a>
+                        <a class="btn btn-sm btn-outline-secondary" href="'.$comparison.'" target="_blank">
+                            View Tenders
                         </a>
                         |
                         <div class="form-check form-check-primary form-switch">

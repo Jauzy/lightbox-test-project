@@ -44,10 +44,10 @@
                         @csrf
                         <input type="hidden" id="pr_id" name="id" />
                         <div class="row" style="gap: 10px 0">
-                            <div class="col-lg-4">
+                            {{-- <div class="col-lg-4">
                                 <label class="form-label">Code</label>
                                 <input type="text" placeholder='Input Someting' class="form-control" name="inp[pr_code]" id="pr_code">
-                            </div>
+                            </div> --}}
                             <div class="col-lg-4">
                                 <label class="form-label">Luminaire Type</label>
                                 <select class="select2 form-control" name="inp[pr_luminaire_type]" id="pr_luminaire_type">

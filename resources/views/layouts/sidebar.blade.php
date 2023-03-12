@@ -53,12 +53,12 @@
                     <span class="menu-title text-truncate">Luminaire Types</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->path() == '/masterdata/company' ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ request()->path() == '/masterdata/company' ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="{{ url('/masterdata/company') }}">
                     <i data-feather="file"></i>
                     <span class="menu-title text-truncate">Companies</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item {{ request()->path() == 'masterdata/products' ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="{{ url('masterdata/products') }}">
                     <i data-feather="file"></i>
