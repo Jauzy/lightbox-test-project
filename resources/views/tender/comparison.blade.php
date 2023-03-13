@@ -18,7 +18,7 @@
         <div class="col-lg-3">
             <label class="form-label">For Company</label>
             <select class="select2 form-control" multiple placeholder="All Companies" id="filter-companies">
-                @foreach ($project->tenders as $t)
+                @foreach ($tenders as $t)
                     <option value="{{$t->pst_id}}" {{str_contains($filter_companies, $t->pst_id) ? 'selected' : ''}}>{{$t->psto_company_name}}</option>
                 @endforeach
             </select>
@@ -27,7 +27,7 @@
         <div class="col-lg-3">
             <label class="form-label">For Spec</label>
             <select class="select2 form-control" multiple placeholder="All Speces" id="filter-speces">
-                @foreach ($project->stage_products as $p)
+                @foreach ($stage_product as $p)
                     <option value="{{$p->psp_pr_id}}" {{str_contains($filter_speces, $p->psp_pr_id) ? 'selected' : ''}}>{{$p->product->pr_code}}</option>
                 @endforeach
             </select>
@@ -68,7 +68,11 @@
             <th>SPEC</th>
             <th colspan="2">Original</th>
             @foreach ($project->tenders as $item)
-                <th>{{$item->psto_company_name}}</th>
+                <th>
+                    <div class="d-flex text-truncate align-items-center" style="gap:10px" onclick="delSubmission('{{$item->pst_id}}')">
+                        {{$item->psto_company_name}} <button class="btn btn-danger btn-sm btn-icon"><i class="bx bx-trash"></i></button>
+                    </div>
+                </th>
             @endforeach
         </tr>
         @foreach ($project->stage_products as $product)
@@ -90,16 +94,20 @@
                     <td class="text-truncate">{{$product->product_offered[$key] ?? '-'}}</td>
                     @endif
                     @foreach ($project->tenders as $tender)
-                        @if ($key == 'pr_main_photo' || $key == 'pr_dimension_photo' || $key == 'pr_photometric_photo')
-                            <td>
-                                <img src="{{url('getimage/'.base64_encode($companies_product[$product->product_offered->pr_code][$tender->pst_id][$key]))}}" style="width:100px" />
-                            </td>
+                        @if(!isset($companies_product[$product->product_offered->pr_id][$tender->pst_id]))
+                        <td>-</td>
                         @else
-                            @php
-                                if($key == 'ms_lum_types_name') $key = 'pr_luminaire_type';
-                                else if($key == 'ms_brand_name') $key = 'pr_manufacturer';
-                            @endphp
-                            <td class="text-truncate">{{$companies_product[$product->product_offered->pr_code][$tender->pst_id][$key] ?? '-'}}</td>
+                            @if($key == 'pr_main_photo' || $key == 'pr_dimension_photo' || $key == 'pr_photometric_photo')
+                                <td>
+                                    <img src="{{url('getimage/'.base64_encode($companies_product[$product->product_offered->pr_id][$tender->pst_id][$key]))}}" style="width:100px" />
+                                </td>
+                            @else
+                                @php
+                                    if($key == 'ms_lum_types_name') $key = 'pr_luminaire_type';
+                                    else if($key == 'ms_brand_name') $key = 'pr_manufacturer';
+                                @endphp
+                                <td class="text-truncate">{{$companies_product[$product->product_offered->pr_id][$tender->pst_id][$key] ?? '-'}}</td>
+                            @endif
                         @endif
                     @endforeach
                 </tr>
@@ -119,6 +127,45 @@
         $(document).ready(function () {
             $('.select2').select2();
         });
+
+        function delSubmission(id){
+            Swal.fire({
+                title: 'Are you sure to delete the data?',
+                text: 'Data recovery is not possible after deletion',
+                showCancelButton: true,
+                confirmButtonText: 'Yes proceed!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                            url: "{{ url('api/tender/form') }}/"+id,
+                            type: 'delete',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(e) {
+                                if (e.status == 'success') {
+                                    new Noty({
+                                        text: e.message,
+                                        type: 'info',
+                                        progressBar: true,
+                                        timeout: 1000
+                                    }).show();
+                                    setTimeout(function() {
+                                        location.reload()
+                                    }, 1000);
+                                } else {
+                                    new Noty({
+                                        text: e.message,
+                                        type: 'info',
+                                        progressBar: true,
+                                        timeout: 1000
+                                    }).show();;
+                                }
+                            }
+                        });
+                }
+            })
+        }
 
         function filterNow(){
             let companies = $('#filter-companies').val();

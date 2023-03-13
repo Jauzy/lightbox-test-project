@@ -12,6 +12,7 @@ use Illuminate\Http\File;
 use App\Models\Projects;
 use App\Models\Products;
 use App\Models\ProjectStages;
+use App\Models\Masterdata\MsUsers;
 use App\Models\ProjectStageProducts;
 use App\Models\ProjectStageProductOffered;
 
@@ -76,12 +77,24 @@ class ProjectsAPI extends Controller
                         </div>
                 ';
 
-                if($item->ps_open_tender == 1)
+                if($item->ps_open_tender == 1){
+                    $usr = MsUsers::where('user_tender_id', $item->ps_id)->first();
                     $html .= '
-                        <a class="btn btn-sm btn-icon btn-outline-secondary" href="'.$form.'" target="_blank">
+                        <a class="btn btn-sm btn-icon btn-outline-secondary" href="'.$form.'" target="_blank" title="Submission Form">
                             <i class="bx bx-search"></i>
                         </a>
                     ';
+                    if($usr){
+                        $html .= '
+                            <a class="btn btn-sm btn-icon btn-outline-secondary"
+                                    onclick="copyURL(\''.$form.'\', \''.$usr->user_username.'\' , \''.$usr->user_raw_password.'\')" target="_blank"
+                                    title="Copy Submission Form Credentials"
+                                >
+                                <i class="bx bx-copy"></i>
+                            </a>
+                        ';
+                    }
+                }
                 $html .= '</div>';
 
             }
@@ -260,6 +273,24 @@ class ProjectsAPI extends Controller
         try {
             $inp = $request->inp;
             $dbs = ProjectStages::find($request->id) ?? new ProjectStages();
+
+            $prj = Projects::find($request->inp['ps_prj_id']);
+            if(!$dbs->ps_id){
+                $dbs->save();
+                $usr = new MsUsers();
+                $usr->user_name =  $prj->prj_name . '-' .$request->inp['ps_level_name'];
+                $usr->user_role = 'tender';
+                $usr->user_tender_id = $dbs->ps_id;
+                $usr->save();
+                $usr->user_username =  substr(md5(uniqid($usr->user_id.'username', true)), 0, 10);
+                $usr->user_raw_password =  substr(md5(uniqid($usr->user_id.'password', true)), 0, 10);
+                $usr->user_password =  '$BSSVPRNHGB$' . substr(md5(md5($usr->user_raw_password)), 0, 50);
+                $usr->save();
+            } else {
+                $usr = MsUsers::where('user_tender_id', $request->id)->first();
+                $usr->user_name =  $prj->prj_name . '-' .$request->inp['ps_level_name'];
+                $usr->save();
+            }
 
             foreach ($inp as $key => $value) {
                 if ($value)

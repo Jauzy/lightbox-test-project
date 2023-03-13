@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
-    Route::GET('/', 'FE\LoginController@index');
-    // Route::GET('login', 'FE\LoginController@login');
+Route::group(['middleware' => ['web', 'oauth']], function () {
+    Route::GET('/', 'FE\LoginController@index')->name('index');
+    Route::GET('login', 'FE\LoginController@login')->name('login');
 
     Route::get('/projects', 'FE\ProjectsController@index');
     Route::get('/projects/new', 'FE\ProjectsController@new');

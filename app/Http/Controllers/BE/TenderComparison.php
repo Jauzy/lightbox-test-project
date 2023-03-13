@@ -25,7 +25,31 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 class TenderComparison extends Controller
 {
     public function printPDF($id){
-        $data['project'] = ProjectStages::with('stage_products', 'stage', 'tenders')->where('ps_id', $id)->first();
+        $data['id'] = $id;
+
+        $data['filter_companies'] = $request->query('companies');
+        $data['filter_date'] = $request->query('date');
+        $data['filter_speces'] = $request->query('speces');
+
+        $data['project'] = ProjectStages::with('stage_products', 'tenders')->where('ps_id', $id)->first();
+        $data['stage_product'] = $data['project']->stage_products;
+        $data['tenders'] = $data['project']->tenders;
+
+        $data['project'] = ProjectStages::with(array(
+        'stage_products' => function($q) use($data) {
+            if($data['filter_speces'])
+            $q->whereIn('psp_pr_id', explode(',',$data['filter_speces']));
+        },
+        'stage',
+        'tenders' => function($q) use($data) {
+            if($data['filter_companies'])
+            $q->whereIn('pst_id', explode(',',$data['filter_companies']));
+            if($data['filter_date']){
+                $data['filter_date'] = date('d/m/Y', strtotime($data['filter_date']));
+                $q->where('psto_date_input', '>=', $data['filter_date']);
+            }
+        },
+        ))->where('ps_id', $id)->first();
 
         $data['comparison_table'] = [
             'ms_lum_types_name' => 'Luminaire Type',
@@ -47,23 +71,54 @@ class TenderComparison extends Controller
 
         $companies_product = [];
         foreach($data['project']->tenders as $t){
-            $companies_product[$t->tender_product->pr_code][$t->pst_id] = $t->tender_product;
+            foreach($t->tender_product as $product){
+                $companies_product[$product->pr_id][$t->pst_id] = $product;
+            }
         }
 
         $data['companies_product'] = $companies_product;
 
-        $pdf = Pdf::loadView('tender.comparison-pdf', $data)->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('tender.comparison-pdf', $data)->setPaper('a3', 'landscape');
         return $pdf->stream('tender-comparison.pdf');
     }
 
     public function printPDFSimple($id, Request $request){
-        $data['project'] = ProjectStages::with('stage_products', 'stage', 'tenders')->where('ps_id', $id)->first();
+        $data['id'] = $id;
 
         $data['filter_companies'] = $request->query('companies');
         $data['filter_date'] = $request->query('date');
         $data['filter_speces'] = $request->query('speces');
 
-        $pdf = Pdf::loadView('tender.simple-comparison-pdf', $data)->setPaper('a4', 'landscape');
+        $data['project'] = ProjectStages::with('stage_products', 'tenders')->where('ps_id', $id)->first();
+        $data['stage_product'] = $data['project']->stage_products;
+        $data['tenders'] = $data['project']->tenders;
+
+        $data['project'] = ProjectStages::with(array(
+        'stage_products' => function($q) use($data) {
+            if($data['filter_speces'])
+            $q->whereIn('psp_pr_id', explode(',',$data['filter_speces']));
+        },
+        'stage',
+        'tenders' => function($q) use($data) {
+            if($data['filter_companies'])
+            $q->whereIn('pst_id', explode(',',$data['filter_companies']));
+            if($data['filter_date']){
+                $data['filter_date'] = date('d/m/Y', strtotime($data['filter_date']));
+                $q->where('psto_date_input', '>=', $data['filter_date']);
+            }
+        },
+        ))->where('ps_id', $id)->first();
+
+        $companies_product = [];
+        foreach($data['project']->tenders as $t){
+            foreach($t->tender_product as $product){
+                $companies_product[$product->pr_id][$t->pst_id] = $product;
+            }
+        }
+
+        $data['companies_product'] = $companies_product;
+
+        $pdf = Pdf::loadView('tender.simple-comparison-pdf', $data)->setPaper('a3', 'landscape');
         return $pdf->stream('tender-comparison.pdf');
     }
 

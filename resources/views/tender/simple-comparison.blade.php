@@ -18,7 +18,7 @@
         <div class="col-lg-3">
             <label class="form-label">For Company</label>
             <select class="select2 form-control" multiple placeholder="All Companies" id="filter-companies">
-                @foreach ($project->tenders as $t)
+                @foreach ($tenders as $t)
                     <option value="{{$t->pst_id}}" {{str_contains($filter_companies, $t->pst_id) ? 'selected' : ''}}>{{$t->psto_company_name}}</option>
                 @endforeach
             </select>
@@ -27,7 +27,7 @@
         <div class="col-lg-3">
             <label class="form-label">For Spec</label>
             <select class="select2 form-control" multiple placeholder="All Speces" id="filter-speces">
-                @foreach ($project->stage_products as $p)
+                @foreach ($stage_product as $p)
                     <option value="{{$p->psp_pr_id}}" {{str_contains($filter_speces, $p->psp_pr_id) ? 'selected' : ''}}>{{$p->product->pr_code}}</option>
                 @endforeach
             </select>
@@ -68,94 +68,38 @@
             <th>SPEC</th>
             <th style="text-align:center">Description</th>
             @foreach ($project->tenders as $item)
-                <th style="text-align:center">{{$item->psto_company_name}}</th>
+                <th class="text-truncate" style="text-align:center">{{$item->psto_company_name}}</th>
             @endforeach
         </tr>
         @foreach ($project->stage_products as $product)
-            @php
-                $ori_wattage = (float)preg_replace("/[^0-9]/", "", $product->product_offered->pr_light_source);
-                $ori_lumen = (float)preg_replace("/[^0-9]/", "", $product->product_offered->pr_lumen_output);
-                $ori_beam = (float)preg_replace("/[^0-9]/", "", $product->product_offered->pr_optical);
-            @endphp
             <tr>
                 <td style="background:#CCCCCC;width:80px" class="text-truncate">{{$product->product_offered->pr_code}}</td>
                 <td style="text-align: center;width:300px">
                     <div style="font-weight:bolder">{{$product->product_offered->lumtype->ms_lum_types_name}}</div>
-                    <div>Wattage : {{$product->product_offered->pr_light_source}}</div>
-                    <div>Lumen : {{$product->product_offered->pr_lumen_output}}</div>
-                    <div>Col. Temp : {{$product->product_offered->pr_color_temperature}}</div>
-                    <div>Beam : {{$product->product_offered->pr_optical}}</div>
-                    <div>CRI : {{$product->product_offered->pr_color_rendering}}</div>
-                    <div>IPR : {{$product->product_offered->pr_ip_rating}}</div>
-                    <div>Driver : {{$product->product_offered->pr_driver}}</div>
+                    <div class="text-truncate">Wattage : {{$product->product_offered->pr_light_source}}</div>
+                    <div class="text-truncate">Lumen : {{$product->product_offered->pr_lumen_output}}</div>
+                    <div class="text-truncate">Col. Temp : {{$product->product_offered->pr_color_temperature}}</div>
+                    <div class="text-truncate">Beam : {{$product->product_offered->pr_optical}}</div>
+                    <div class="text-truncate">CRI : {{$product->product_offered->pr_color_rendering}}</div>
+                    <div class="text-truncate">IPR : {{$product->product_offered->pr_ip_rating}}</div>
+                    <div class="text-truncate">Driver : {{$product->product_offered->pr_driver}}</div>
                 </td>
                 @foreach ($project->tenders as $tender)
                     <td style="text-align:center">
-                        @if($tender->tender_product->psto_supplied_as == 'as-specified')
-                            <div style="color:#29C66F">
+                        @if($companies_product[$product->product_offered->pr_id][$tender->pst_id]->psto_supplied_as == 'as-specified')
+                            <div style="color:#29C66F;font-weight:bolder">
                                 AS SPECIFIED
                             </div>
                         @else
-                            @php
-                                $valid = true;
-                                $not_valid_reason = [];
-                                $wattage = (float)preg_replace("/[^0-9]/", "", $tender->tender_product->pr_light_source);
-                                $lumen = (float)preg_replace("/[^0-9]/", "", $tender->tender_product->pr_lumen_output);
-                                $beam = (float)preg_replace("/[^0-9]/", "", $tender->tender_product->pr_optical);
-
-                                $accepted_gap_wattage = $ori_wattage * 0.1;
-                                $diff_wattage = abs($wattage - $ori_wattage);
-                                if($diff_wattage > $accepted_gap_wattage){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'Wattage';
-                                }
-
-                                $accepted_gap_lumen = $ori_lumen * 0.1;
-                                $diff_lumen = abs($lumen - $ori_lumen);
-                                if($diff_lumen > $accepted_gap_lumen){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'Lumen';
-                                }
-
-                                $accepted_gap_beam = $ori_beam * 0.15;
-                                $diff_beam = abs($beam - $ori_beam);
-                                if($diff_beam > $accepted_gap_beam){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'Beam';
-                                }
-
-                                if($product->product_offered->pr_color_temperature != $tender->tender_product->pr_color_temperature){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'Color Temp';
-                                }
-
-                                if($product->product_offered->pr_color_rendering != $tender->tender_product->pr_color_rendering){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'CRI';
-                                }
-
-                                if($product->product_offered->pr_ip_rating != $tender->tender_product->pr_ip_rating){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'IPR';
-                                }
-
-                                if($product->product_offered->pr_driver != $tender->tender_product->pr_driver){
-                                    $valid = false;
-                                    $not_valid_reason[] = 'Driver';
-                                }
-
-                            @endphp
-                            @if($valid)
-                                <div style="color:#2A4C6B">
+                            @if($companies_product[$product->product_offered->pr_id][$tender->pst_id]->psto_status == 'Comply')
+                                <div style="color:#2A4C6B;font-weight:bolder">
                                     COMPLY
                                 </div>
                             @else
-                                <div style="color:red">
+                                <div style="color:red;font-weight:bolder">
                                     NOT COMPLY
                                 </div>
-                                <div class="text-danger">(
-                                    {{join(",", $not_valid_reason)}}
-                                    )
+                                <div style="color:red;font-weight:bolder">( {{$companies_product[$product->product_offered->pr_id][$tender->pst_id]->psto_error}} )
                                 </div>
                             @endif
                         @endif
@@ -195,7 +139,7 @@
                 speces = speces.join(',');
             }
 
-            window.location.href = "{{url('tender/comparison/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date;
+            window.location.href = "{{url('tender/comparison-simple/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date;
         }
 
         function exportExcel(){
@@ -215,7 +159,7 @@
                 speces = speces.join(',');
             }
 
-            window.open("{{url('api/tender/comparison/excel/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date)
+            window.open("{{url('api/tender/comparison/excel-simple/'.$id)}}?companies="+companies+"&speces="+speces+"&date="+date)
         }
 
         function exportPDF(){

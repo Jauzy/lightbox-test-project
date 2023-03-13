@@ -31,25 +31,23 @@
             <h2 class="accordion-header" id="heading{{$item->psp_id}}">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{$item->psp_id}}">
                     <div class="d-flex align-items-center flex-wrap w-100" style="gap:20px">
-                        <img src="{{url('getimage/'.base64_encode($item->product->pr_main_photo))}}" class="rounded" style="height:70px;width:70px" />
+                        <img src="{{url('getimage/'.base64_encode($item->product_offered->pr_main_photo))}}" class="rounded" style="height:70px;width:70px" />
                         <div>
-                            <a class="text-primary fw-bolder"><strong>{{$item->product->pr_code}}</strong></a>
-                            <div>{{$item->product->lumtype->ms_lum_types_name}}</div>
-                            <div>{{$item->product->pr_lamp_type}} | {{$item->product->pr_light_source}} | {{$item->product->pr_lumen_output}}</div>
+                            <a class="text-primary fw-bolder"><strong>{{$item->product_offered->pr_code}}</strong></a>
+                            <div>{{$item->product_offered->lumtype->ms_lum_types_name}}</div>
+                            <div>{{$item->product_offered->pr_lamp_type}} | {{$item->product_offered->pr_light_source}} | {{$item->product_offered->pr_lumen_output}}</div>
                         </div>
                         <div class="mx-3">
-                            <div>{{$item->product->brand->ms_brand_name}}</div>
-                            <div>{{$item->product->pr_supplier}}</div>
+                            <div>{{$item->product_offered->brand->ms_brand_name}}</div>
+                            <div>{{$item->product_offered->pr_supplier}}</div>
                         </div>
                         <div>
-                            <div>{{$item->product->pr_model}}</div>
-                            <div>{{$item->product->pr_finishing}}</div>
+                            <div>{{$item->product_offered->pr_model}}</div>
+                            <div>{{$item->product_offered->pr_finishing}}</div>
                         </div>
                     </div>
                 </button>
             </h2>
-
-
 
             <div id="accordion{{$item->psp_id}}" class="accordion-collapse collapse" aria-labelledby="heading{{$item->psp_id}}">
                 <div class="accordion-body">

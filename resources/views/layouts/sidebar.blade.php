@@ -1,5 +1,4 @@
-<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow @yield('sidebar-size')"
-    data-scroll-to-active="true">
+<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow @yield('sidebar-size')" data-scroll-to-active="true">
     <div class="navbar-header">
         <ul class="nav navbar-nav flex-row">
             <li class="nav-item me-auto"><a class="navbar-brand"
@@ -22,6 +21,7 @@
     </div>
     <div class="shadow-bottom"></div>
     <div class="main-menu-content">
+        @if(session()->get('userRole') == 'superadmin')
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
             <li class="navigation-header"><span data-i18n="Apps &amp; Pages">Web Content</span><i
                     data-feather="more-horizontal"></i>
@@ -34,7 +34,8 @@
                 </a>
             </li>
 
-            <li class="navigation-header"><span data-i18n="Apps &amp; Pages">Masterdata</span><i data-feather="more-horizontal"></i>
+            <li class="navigation-header"><span data-i18n="Apps &amp; Pages">Masterdata</span><i
+                    data-feather="more-horizontal"></i>
             <li class="nav-item {{ request()->path() == '/masterdata/categories' ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="{{ url('/masterdata/categories') }}">
                     <i data-feather="file"></i>
@@ -66,5 +67,6 @@
                 </a>
             </li>
         </ul>
+        @endif
     </div>
 </div>

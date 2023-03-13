@@ -43,6 +43,8 @@
             </div>
         </div>
     </div>
+
+    <input id="copy-purpose" type="hidden" />
 @endsection
 
 @section('js_section')
@@ -86,6 +88,19 @@
 
         function edit(code){
             window.location.href = "{{ url('projects/') }}/" + code + '/form';
+        }
+
+        function copyURL(url, username, password){
+            let text = `URL:${url}\nUsername:${username}\nPassword:${password}`
+            const el = document.createElement('textarea');
+            el.value = text;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
         }
 
         function toggleTender(id){

@@ -13,6 +13,6 @@ class ProjectStageTender extends Model
     public $timestamps = false;
 
     public function tender_product(){
-        return $this->hasOne(ProjectStageTenderOffered::class, 'psto_pst_id', 'pst_id');
+        return $this->hasMany(ProjectStageTenderOffered::class, 'psto_pst_id', 'pst_id');
     }
 }

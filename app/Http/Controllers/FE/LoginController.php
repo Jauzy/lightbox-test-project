@@ -9,12 +9,14 @@ class LoginController extends Controller
 {
     public function index()
     {
-        return redirect(url('/masterdata/products'));
-        // if (session()->get('login')) {
-        //     return redirect(url('/dashboard/contacts'));
-        // } else {
-        //     return redirect(url('login'));
-        // }
+        if (session()->get('login')) {
+            if(session()->get('userRole') == 'tender'){
+                return redirect(url('/tender/submission-form/'.session()->get('userTender')));
+            } else
+            return redirect(url('/projects'));
+        } else {
+            return redirect(url('/login'));
+        }
     }
 
     public function login()

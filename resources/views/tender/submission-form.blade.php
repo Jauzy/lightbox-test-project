@@ -337,39 +337,47 @@
 
         function submitForm(){
             if ($('#frm-produk').valid()) {
-                var formData = new FormData($('#frm-produk')[0]);
-                $.ajax({
-                    url: "{{ url('api/tender/form') }}",
-                    type: 'post',
-                    data: formData,
-                    contentType: false, //untuk upload image
-                    processData: false, //untuk upload image
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    timeout: 300000, // sets timeout to 3 seconds
-                    dataType: 'json',
-                    success: function(e) {
-                        if (e.status == 'success') {
-                            new Noty({
-                                text: e.message,
-                                type: 'info',
-                                progressBar: true,
-                                timeout: 1000
-                            }).show();
-                            setTimeout(function() {
-                                window.location.href = "{{ url('tender/submission-form/success') }}"
-                            }, 1000);
-                        } else {
-                            new Noty({
-                                text: e.message,
-                                type: 'info',
-                                progressBar: true,
-                                timeout: 1000
-                            }).show();;
-                        }
+                Swal.fire({
+                    title: 'Do you want to save the changes?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var formData = new FormData($('#frm-produk')[0]);
+                        $.ajax({
+                            url: "{{ url('api/tender/form') }}",
+                            type: 'post',
+                            data: formData,
+                            contentType: false, //untuk upload image
+                            processData: false, //untuk upload image
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            timeout: 300000, // sets timeout to 3 seconds
+                            dataType: 'json',
+                            success: function(e) {
+                                if (e.status == 'success') {
+                                    new Noty({
+                                        text: e.message,
+                                        type: 'info',
+                                        progressBar: true,
+                                        timeout: 1000
+                                    }).show();
+                                    setTimeout(function() {
+                                        window.location.href = "{{ url('tender/submission-form/success') }}"
+                                    }, 1000);
+                                } else {
+                                    new Noty({
+                                        text: e.message,
+                                        type: 'info',
+                                        progressBar: true,
+                                        timeout: 1000
+                                    }).show();;
+                                }
+                            }
+                        });
                     }
-                });
+                })
             }
         }
 

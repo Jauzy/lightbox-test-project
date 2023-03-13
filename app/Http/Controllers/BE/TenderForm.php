@@ -26,6 +26,29 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class TenderForm extends Controller
 {
+    public function delF($id){
+        $tender = ProjectStageTender::find($id);
+        $tender->delete();
+
+        $tender_offered = ProjectStageTenderOffered::where('psto_pst_id', $id)->get();
+        foreach($tender_offered as $key => $tender){
+            foreach($tender->getAttributes() as $key => $val){
+                if($key == 'pr_main_photo' || $key == 'pr_photometric_photo' || $key == 'pr_dimension_photo' || $key == 'pr_accessories_photo'){
+                    if($val != null){
+                        Storage::delete($val);
+                    }
+                }
+            }
+
+            $tender->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data berhasil dihapus',
+        ]);
+    }
+
     public function saveF(Request $request){
         $input = $request->inp;
         $psto = $request->psto;
@@ -106,6 +129,60 @@ class TenderForm extends Controller
                     }
                 }
             }
+            $data->save();
+
+            $ori_wattage = (float)preg_replace("/[^0-9]/", "", $offered_ori->pr_light_source);
+            $ori_lumen = (float)preg_replace("/[^0-9]/", "", $offered_ori->pr_lumen_output);
+            $ori_beam = (float)preg_replace("/[^0-9]/", "", $offered_ori->pr_optical);
+            $valid = true;
+            $not_valid_reason = [];
+            $wattage = (float)preg_replace("/[^0-9]/", "", $data->pr_light_source);
+            $lumen = (float)preg_replace("/[^0-9]/", "", $data->pr_lumen_output);
+            $beam = (float)preg_replace("/[^0-9]/", "", $data->pr_optical);
+
+            $accepted_gap_wattage = $ori_wattage * 0.1;
+            $diff_wattage = abs($wattage - $ori_wattage);
+            if($diff_wattage > $accepted_gap_wattage){
+                $valid = false;
+                $not_valid_reason[] = 'Wattage';
+            }
+
+            $accepted_gap_lumen = $ori_lumen * 0.1;
+            $diff_lumen = abs($lumen - $ori_lumen);
+            if($diff_lumen > $accepted_gap_lumen){
+                $valid = false;
+                $not_valid_reason[] = 'Lumen';
+            }
+
+            $accepted_gap_beam = $ori_beam * 0.15;
+            $diff_beam = abs($beam - $ori_beam);
+            if($diff_beam > $accepted_gap_beam){
+                $valid = false;
+                $not_valid_reason[] = 'Beam';
+            }
+
+            if($offered_ori->pr_color_temperature != $data->pr_color_temperature){
+                $valid = false;
+                $not_valid_reason[] = 'Color Temp';
+            }
+
+            if($offered_ori->pr_color_rendering != $data->pr_color_rendering){
+                $valid = false;
+                $not_valid_reason[] = 'CRI';
+            }
+
+            if($offered_ori->pr_ip_rating != $data->pr_ip_rating){
+                $valid = false;
+                $not_valid_reason[] = 'IPR';
+            }
+
+            if($offered_ori->pr_driver != $data->pr_driver){
+                $valid = false;
+                $not_valid_reason[] = 'Driver';
+            }
+
+            $data->psto_status = $valid ? 'Comply' : 'Not Comply';
+            $data->psto_error = join(",", $not_valid_reason);
             $data->save();
         }
         return json_encode([

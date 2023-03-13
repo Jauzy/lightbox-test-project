@@ -68,8 +68,11 @@
                 <tr class="table-dark">
                     <th>SPEC</th>
                     <th colspan="2">Original</th>
-                    @foreach ($project->tenders as $item)
+                    @foreach ($project->tenders as $idx_tender => $item)
+                        @if($idx_tender > 8)
+                        @else
                         <th>{{$item->psto_company_name}}</th>
+                        @endif
                     @endforeach
                 </tr>
                 @foreach ($comparison_table as $key => $label)
@@ -89,7 +92,7 @@
                                 $db = $product->product_offered;
                                 $url = storage_path('app\\'.$db[$key]);
                             @endphp
-                            <img src="{{$url}}" style="height:70px;border-radius:5px" />
+                            <img src="{{$url}}" style="height:100px;width:100px;object-fit:contain;border-radius:5px" />
                             @else
                             -
                             @endif
@@ -97,26 +100,33 @@
                         @else
                         <td class="text-truncate">{{$product->product_offered[$key] ?? '-'}}</td>
                         @endif
-                        @foreach ($project->tenders as $tender)
-                        @if ($key == 'pr_main_photo' || $key == 'pr_dimension_photo' || $key == 'pr_photometric_photo')
-                            <td>
-                                @if($companies_product[$product->product_offered->pr_code][$tender->pst_id][$key])
-                                @php
-                                    $url = storage_path('app\\'.$companies_product[$product->product_offered->pr_code][$tender->pst_id][$key]);
-                                @endphp
-                                <img src="{{$url}}" style="height:70px;border-radius:5px" />
+                        @foreach ($project->tenders as $idx_tender => $tender)
+                            @if($idx_tender > 8)
+                            @else
+                                @if(!isset($companies_product[$product->product_offered->pr_id][$tender->pst_id]))
+                                <td>-</td>
                                 @else
-                                -
+                                    @if ($key == 'pr_main_photo' || $key == 'pr_dimension_photo' || $key == 'pr_photometric_photo')
+                                        <td>
+                                            @if($companies_product[$product->product_offered->pr_id][$tender->pst_id][$key])
+                                            @php
+                                                $url = storage_path('app\\'.$companies_product[$product->product_offered->pr_id][$tender->pst_id][$key]);
+                                            @endphp
+                                            <img src="{{$url}}" style="height:100px;width:100px;object-fit:contain;border-radius:5px" />
+                                            @else
+                                            -
+                                            @endif
+                                        </td>
+                                    @else
+                                        @php
+                                            if($key == 'ms_lum_types_name') $key = 'pr_luminaire_type';
+                                            else if($key == 'ms_brand_name') $key = 'pr_manufacturer';
+                                        @endphp
+                                        <td class="text-truncate">{{$companies_product[$product->product_offered->pr_id][$tender->pst_id][$key] ?? '-'}}</td>
+                                    @endif
                                 @endif
-                            </td>
-                        @else
-                            @php
-                                if($key == 'ms_lum_types_name') $key = 'pr_luminaire_type';
-                                else if($key == 'ms_brand_name') $key = 'pr_manufacturer';
-                            @endphp
-                            <td class="text-truncate">{{$companies_product[$product->product_offered->pr_code][$tender->pst_id][$key] ?? '-'}}</td>
-                        @endif
-                    @endforeach
+                            @endif
+                        @endforeach
                     </tr>
                 @endforeach
         </table>

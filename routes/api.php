@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BE\LoginControllerAPI;
 
+Route::POST('/login', 'BE\LoginController@exe')->name('loginExe');
+Route::GET('/logout', 'BE\LoginController@logout')->name('logout');
+
 Route::prefix('projects')->group(function () {
     Route::POST('/stage/toggle-tender', 'BE\ProjectsAPI@toggleTender');
     Route::POST('/stage/product', 'BE\ProjectsAPI@assignProduct');
@@ -24,10 +27,10 @@ Route::prefix('projects')->group(function () {
 
 Route::prefix('tender')->group(function () {
     Route::POST('/form', 'BE\TenderForm@saveF');
+    Route::DELETE('/form/{id}', 'BE\TenderForm@delF');
     Route::GET('/comparison/pdf/{id}', 'BE\TenderComparison@printPDF');
     Route::GET('/comparison-simple/pdf/{id}', 'BE\TenderComparison@printPDFSimple');
     Route::GET('/comparison/excel/{id}', 'BE\TenderComparison@exportExcel');
-
 });
 
 Route::prefix('masterdata')->group(function () {
